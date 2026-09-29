@@ -26,7 +26,7 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    const targets = sections.map(({ key }) => document.getElementById(key)).filter((item): item is HTMLElement => Boolean(item));
+    const targets = data.sections.filter((section) => section.visible).map(({ key }) => document.getElementById(key)).filter((item): item is HTMLElement => Boolean(item));
     if (!targets.length) return;
     const observer = new IntersectionObserver((entries) => {
       const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
@@ -34,7 +34,7 @@ export function Navbar() {
     }, { rootMargin: '-20% 0px -65% 0px', threshold: [0, 0.2, 0.5] });
     targets.forEach((target) => observer.observe(target));
     return () => observer.disconnect();
-  }, [sections]);
+  }, [data.sections]);
 
   useEffect(() => {
     if (!open) return;
@@ -65,7 +65,7 @@ export function Navbar() {
     <header className={`site-header${scrolled ? ' site-header--scrolled' : ''}`}>
       <nav className="navbar container" aria-label="Main navigation">
         <a className="brand" href="#top" onClick={(event) => { event.preventDefault(); navigate('top'); }}>
-          <span className="brand-mark">YK</span><span>{data.profile?.siteName ?? 'Yakshit Portfolio'}</span>
+          <img className="brand-logo" src="/images/brand/Logo.png" alt="" /><span>{data.profile?.siteName ?? 'Yakshit Portfolio'}</span>
         </a>
         <div className="nav-links" aria-label="Portfolio sections">
           {sections.map((section) => (

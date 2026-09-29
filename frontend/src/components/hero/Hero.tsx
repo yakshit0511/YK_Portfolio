@@ -1,11 +1,11 @@
-import { Component, lazy, Suspense, useEffect, useState, type ErrorInfo, type ReactNode } from 'react';
+import { Component, lazy, Suspense, type ErrorInfo, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDownRight, Github, Instagram, Linkedin } from 'lucide-react';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { scrollToSection } from '../../utils/smoothScroll';
 import { GlowButton } from '../ui/GlowButton';
-import { HeroVideo } from './HeroVideo';
+import { HeroSequence } from './HeroSequence';
 import { TypingText } from './TypingText';
 
 const ParticlesCanvas = lazy(() => import('./ParticlesCanvas'));
@@ -21,23 +21,12 @@ export function Hero() {
   const { data } = usePortfolio();
   const reducedMotion = useReducedMotion();
   const profile = data.profile;
-  const [posterReady, setPosterReady] = useState(false);
   const intro = profile?.about.split(/(?<=[.!?])\s/)[0] ?? '';
   const socials = [
     { href: profile?.socials.github, label: 'GitHub', Icon: Github },
     { href: profile?.socials.linkedin, label: 'LinkedIn', Icon: Linkedin },
     { href: profile?.socials.instagram, label: 'Instagram', Icon: Instagram },
   ].filter((item) => item.href);
-
-  useEffect(() => {
-    const markReady = () => setPosterReady(true);
-    window.addEventListener('hero-poster-ready', markReady);
-    const poster = new Image();
-    poster.onload = markReady;
-    poster.onerror = markReady;
-    poster.src = '/videos/hero-poster.jpg';
-    return () => window.removeEventListener('hero-poster-ready', markReady);
-  }, []);
 
   return (
     <section className="hero-section" aria-labelledby="hero-title">
@@ -65,12 +54,11 @@ export function Hero() {
           </motion.div>
         </motion.div>
         <motion.div className="hero-visual" initial={reducedMotion ? false : { opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.9, delay: 0.2 }}>
-          <HeroVideo />
+          <HeroSequence />
           <span className="visual-index" aria-hidden="true">01 <i /> INTRODUCTION</span>
         </motion.div>
       </div>
       <span className="hero-side-note" aria-hidden="true">BUILDING IDEAS INTO DIGITAL EXPERIENCES</span>
-      <span className="sr-only" aria-live="polite">{posterReady ? 'Hero poster loaded.' : 'Loading hero poster.'}</span>
     </section>
   );
 }

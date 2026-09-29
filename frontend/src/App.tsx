@@ -10,6 +10,7 @@ import { AdminPlaceholder } from './pages/AdminPlaceholder';
 import { NotFound } from './pages/NotFound';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { setSmoothScroller } from './utils/smoothScroll';
+import { HeroProvider } from './context/HeroContext';
 
 const adminPath = (import.meta.env.VITE_ADMIN_PATH || '/yakshit-portfolio_5518').startsWith('/')
   ? (import.meta.env.VITE_ADMIN_PATH || '/yakshit-portfolio_5518')
@@ -25,24 +26,31 @@ function useIntroReady() {
     const progressTimer = window.setInterval(() => {
       setProgress((value) => Math.min(value + 7, 92));
     }, 65);
-    const posterReady = new Promise<void>((resolve) => {
+    const firstImageReady = new Promise<void>((resolve) => {
       const image = new Image();
       image.onload = () => resolve();
       image.onerror = () => resolve();
-      image.src = '/videos/hero-poster.jpg';
+      image.src = '/images/cutouts/01_coding_0-3s%20(1).png';
     });
     const fontsReady = document.fonts?.ready.then(() => undefined).catch(() => undefined) ?? Promise.resolve();
 
-    Promise.all([posterReady, fontsReady]).then(() => {
+    let readyTimer = 0;
+    let hideTimer = 0;
+    Promise.all([firstImageReady, fontsReady]).then(() => {
       const remaining = Math.max(0, 800 - (performance.now() - startedAt));
-      window.setTimeout(() => {
+      readyTimer = window.setTimeout(() => {
         if (!active) return;
         setProgress(100);
-        window.setTimeout(() => setVisible(false), 120);
+        hideTimer = window.setTimeout(() => setVisible(false), 120);
       }, remaining);
     });
 
-    return () => { active = false; window.clearInterval(progressTimer); };
+    return () => {
+      active = false;
+      window.clearInterval(progressTimer);
+      window.clearTimeout(readyTimer);
+      window.clearTimeout(hideTimer);
+    };
   }, []);
 
   return { progress, visible };
@@ -69,7 +77,7 @@ export default function App() {
     };
   }, [reducedMotion]);
 
-  return <>
+  return <HeroProvider>
     <BackgroundScene />
     <Navbar />
     <Routes>
@@ -79,5 +87,5 @@ export default function App() {
     </Routes>
     <Footer />
     <Loader progress={progress} visible={visible} />
-  </>;
+  </HeroProvider>;
 }

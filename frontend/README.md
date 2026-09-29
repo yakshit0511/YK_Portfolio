@@ -21,13 +21,18 @@ npm run preview
 
 ## Manual media
 
-Add supplied media under `public/` using these names:
+Add supplied media under `public/` using the current filenames:
 
-- `videos/hero.mp4` and `videos/hero-poster.jpg`
-- `images/hero/hero-1.jpg` through `hero-7.jpg`
-- `images/backgrounds/room-bg.jpg` and `room-bg-mobile.jpg`
-- `images/brand/favicon.png` (optional)
-- `images/guide/` and `images/cutouts/` are reserved for Prompt 4
+- `images/cutouts/01_coding_0-3s (1).png`
+- `images/cutouts/02_looks_left_3-5s (1).png`
+- `images/cutouts/03_looks_right_5-6.5s (1).png`
+- `images/cutouts/04_remove_headset_8-10s (1).png`
+- `images/cutouts/05_wave_10-12s (1).png`
+- `images/cutouts/06_point_down_12-15s (1).png`
+- `images/cutouts/07_final_pose (1).png`
+- `images/backgrounds/room-bg.jpg.png` (currently supplied) and `room-bg-mobile.jpg`
+- `images/brand/Logo.png` (used as the favicon)
+- `images/guide/` contains the supplied pointing illustrations for Prompt 4
 
 Vercel's `vercel.json` is strict JSON and cannot contain comments. To proxy API requests through the frontend domain for first-party cookies, add this rewrite before the SPA catch-all and replace the Render host:
 

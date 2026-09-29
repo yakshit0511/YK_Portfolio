@@ -21,7 +21,18 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     fetchPortfolio()
       .then((result) => {
         if (!active) return;
-        const safeProfile = result.profile ? { ...result.profile } : fallbackData.profile;
+        const safeProfile = result.profile
+          ? {
+              ...fallbackData.profile!,
+              ...result.profile,
+              typingTitles: result.profile.typingTitles?.length
+                ? result.profile.typingTitles
+                : fallbackData.profile!.typingTitles,
+              about: result.profile.about || fallbackData.profile!.about,
+              socials: { ...fallbackData.profile!.socials, ...result.profile.socials },
+              seo: { ...fallbackData.profile!.seo, ...result.profile.seo },
+            }
+          : fallbackData.profile;
         if (safeProfile) delete (safeProfile as typeof safeProfile & { phone?: string }).phone;
         setData({ ...fallbackData, ...result, profile: safeProfile });
       })

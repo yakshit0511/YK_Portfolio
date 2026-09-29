@@ -10,7 +10,7 @@ export function Loader({ progress, visible }: { progress: number; visible: boole
       aria-hidden={!visible}
     >
       <div className="loader-mark" style={{ '--progress': `${progress}%` } as React.CSSProperties}>
-        <span>YK</span>
+        <img src="/images/brand/Logo.png" alt="" />
       </div>
       <p>Yakshit Portfolio</p>
     </motion.div>
