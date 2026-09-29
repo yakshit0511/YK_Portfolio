@@ -1,0 +1,246 @@
+### Auth: login
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "email": "yakshitkoshiya18@gmail.com",
+  "password": "YourStrongPassword123"
+}
+
+### Auth: logout
+POST http://localhost:5000/api/auth/logout
+Content-Type: application/json
+Origin: http://localhost:5173
+
+### Auth: me
+GET http://localhost:5000/api/auth/me
+Origin: http://localhost:5173
+
+### Auth: change password
+PUT http://localhost:5000/api/auth/change-password
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "currentPassword": "YourStrongPassword123",
+  "newPassword": "YourUpdatedPassword456"
+}
+
+### Admin: profile get
+GET http://localhost:5000/api/admin/profile
+Origin: http://localhost:5173
+
+### Admin: profile update
+PUT http://localhost:5000/api/admin/profile
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "fullName": "Yakshit Koshiya",
+  "siteName": "Yakshit Portfolio",
+  "typingTitles": ["Full Stack MERN Developer", "React Developer"],
+  "about": "Portfolio profile details updated.",
+  "location": "Surat, Gujarat",
+  "showPhone": false,
+  "accentColor": "#2f7bff"
+}
+
+### Admin: profile avatar upload
+POST http://localhost:5000/api/admin/profile/avatar
+Origin: http://localhost:5173
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+------WebKitFormBoundary
+Content-Disposition: form-data; name="image"; filename="avatar.png"
+Content-Type: image/png
+
+< ./sample-avatar.png
+------WebKitFormBoundary--
+
+### Admin: profile resume upload
+POST http://localhost:5000/api/admin/profile/resume
+Origin: http://localhost:5173
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+------WebKitFormBoundary
+Content-Disposition: form-data; name="resume"; filename="resume.pdf"
+Content-Type: application/pdf
+
+< ./sample-resume.pdf
+------WebKitFormBoundary--
+
+### Admin: delete profile resume
+DELETE http://localhost:5000/api/admin/profile/resume
+Origin: http://localhost:5173
+
+### Admin: list projects
+GET http://localhost:5000/api/admin/projects
+Origin: http://localhost:5173
+
+### Admin: create project
+POST http://localhost:5000/api/admin/projects
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "title": "Portfolio Website",
+  "shortDescription": "A modern portfolio for Yakshit.",
+  "description": "Built using React and Node.",
+  "techStack": ["React", "Node.js", "MongoDB"],
+  "liveUrl": "https://example.com",
+  "githubUrl": "https://github.com/example",
+  "featured": true,
+  "visible": true,
+  "order": 1
+}
+
+### Admin: update project
+PUT http://localhost:5000/api/admin/projects/64f8c70f7f37d5952dca1234
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "title": "Updated Portfolio Website",
+  "featured": true,
+  "visible": true,
+  "order": 2
+}
+
+### Admin: upload project images
+POST http://localhost:5000/api/admin/projects/64f8c70f7f37d5952dca1234/images
+Origin: http://localhost:5173
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+------WebKitFormBoundary
+Content-Disposition: form-data; name="images"; filename="project-1.png"
+Content-Type: image/png
+
+< ./sample-project-image.png
+------WebKitFormBoundary--
+
+### Admin: delete project image
+DELETE http://localhost:5000/api/admin/projects/64f8c70f7f37d5952dca1234/images/project-image-public-id
+Origin: http://localhost:5173
+
+### Admin: reorder projects
+PATCH http://localhost:5000/api/admin/projects/reorder
+Content-Type: application/json
+Origin: http://localhost:5173
+
+[
+  { "id": "64f8c70f7f37d5952dca1234", "order": 1 },
+  { "id": "64f8c70f7f37d5952dca5678", "order": 2 }
+]
+
+### Admin: list skills
+GET http://localhost:5000/api/admin/skills
+Origin: http://localhost:5173
+
+### Admin: create skill
+POST http://localhost:5000/api/admin/skills
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "name": "React.js",
+  "category": "Frontend",
+  "level": 90,
+  "visible": true,
+  "order": 1
+}
+
+### Admin: reorder skills
+PATCH http://localhost:5000/api/admin/skills/reorder
+Content-Type: application/json
+Origin: http://localhost:5173
+
+[
+  { "id": "64f8c70f7f37d5952dca1111", "order": 1 },
+  { "id": "64f8c70f7f37d5952dca2222", "order": 2 }
+]
+
+### Admin: list education
+GET http://localhost:5000/api/admin/education
+Origin: http://localhost:5173
+
+### Admin: create education
+POST http://localhost:5000/api/admin/education
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "institution": "CHARUSAT University",
+  "degree": "B.Tech",
+  "field": "Information Technology",
+  "endYear": 2027,
+  "currentSemester": "7th Semester",
+  "visible": true,
+  "order": 1
+}
+
+### Admin: list experience
+GET http://localhost:5000/api/admin/experience
+Origin: http://localhost:5173
+
+### Admin: create experience
+POST http://localhost:5000/api/admin/experience
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "role": "Full Stack Developer",
+  "company": "Freelance",
+  "startDate": "2024-06",
+  "endDate": "Present",
+  "current": true,
+  "description": "Developed client websites and internal tools.",
+  "techStack": ["React", "Node.js", "MongoDB"],
+  "visible": true,
+  "order": 1
+}
+
+### Admin: sections get
+GET http://localhost:5000/api/admin/sections
+Origin: http://localhost:5173
+
+### Admin: sections update
+PUT http://localhost:5000/api/admin/sections
+Content-Type: application/json
+Origin: http://localhost:5173
+
+[
+  { "key": "about", "title": "About", "visible": true, "order": 0 },
+  { "key": "skills", "title": "Skills", "visible": true, "order": 1 },
+  { "key": "projects", "title": "Projects", "visible": true, "order": 2 },
+  { "key": "education", "title": "Education", "visible": true, "order": 3 },
+  { "key": "experience", "title": "Experience", "visible": true, "order": 4 },
+  { "key": "contact", "title": "Contact", "visible": true, "order": 5 }
+]
+
+### Admin: inquiries list
+GET http://localhost:5000/api/admin/inquiries?page=1&limit=10&status=new
+Origin: http://localhost:5173
+
+### Admin: inquiry by id
+GET http://localhost:5000/api/admin/inquiries/64f8c70f7f37d5952dca8888
+Origin: http://localhost:5173
+
+### Admin: inquiry status update
+PATCH http://localhost:5000/api/admin/inquiries/64f8c70f7f37d5952dca8888/status
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "status": "read"
+}
+
+### Admin: dashboard
+GET http://localhost:5000/api/admin/dashboard
+Origin: http://localhost:5173
+
+### Public: portfolio
+GET http://localhost:5000/api/public/portfolio
+
+### Health check
+GET http://localhost:5000/api/health

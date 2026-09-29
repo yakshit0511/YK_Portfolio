@@ -1,0 +1,7 @@
+export { default as Education } from './Education.js';
+export { default as Experience } from './Experience.js';
+export { default as Inquiry } from './Inquiry.js';
+export { default as Profile } from './Profile.js';
+export { default as Project } from './Project.js';
+export { default as SectionSetting } from './SectionSetting.js';
+export { default as Skill } from './Skill.js';
