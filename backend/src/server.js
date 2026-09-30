@@ -17,18 +17,22 @@ const shutdown = async (exitCode = 0) => {
 
 process.once('SIGTERM', () => void shutdown(0));
 process.once('SIGINT', () => void shutdown(0));
-process.on('unhandledRejection', () => {
-  console.error('Unhandled promise rejection.');
+process.on('unhandledRejection', (error) => {
+  console.error('Unhandled promise rejection:', error);
   void shutdown(1);
 });
-process.on('uncaughtException', () => {
-  console.error('Uncaught exception.');
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught exception:', error);
   void shutdown(1);
 });
 
 try {
   await connectDB();
   server = app.listen(env.PORT, () => console.log(`Server listening on port ${env.PORT}.`));
+  server.on('error', (error) => {
+    console.error(`Server failed to start on port ${env.PORT}:`, error.message);
+    void shutdown(1);
+  });
 } catch {
   console.error('Server startup failed.');
   await shutdown(1);
