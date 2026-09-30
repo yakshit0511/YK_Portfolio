@@ -6,6 +6,7 @@ import { env } from './config/env.js';
 
 let server;
 let shuttingDown = false;
+const port = Number(env.PORT) || 5000;
 
 const shutdown = async (exitCode = 0) => {
   if (shuttingDown) return;
@@ -28,12 +29,17 @@ process.on('uncaughtException', (error) => {
 
 try {
   await connectDB();
-  server = app.listen(env.PORT, () => console.log(`Server listening on port ${env.PORT}.`));
+  server = app.listen(port, () => console.log(`Server listening on port ${port}.`));
   server.on('error', (error) => {
-    console.error(`Server failed to start on port ${env.PORT}:`, error.message);
+    if (error.code === 'EADDRINUSE') {
+      console.error(`Port ${port} is already in use. Stop the other process or set PORT to a free port.`);
+    } else {
+      console.error(`Server failed to start on port ${port}:`, error.message);
+    }
     void shutdown(1);
   });
-} catch {
+} catch (error) {
   console.error('Server startup failed.');
+  console.error(error?.message || error);
   await shutdown(1);
 }

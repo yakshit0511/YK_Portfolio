@@ -19,6 +19,13 @@ const emptyProject: Omit<ProjectData, '_id'> = {
   title: '',
   shortDescription: '',
   description: '',
+  role: '',
+  duration: '',
+  status: 'completed',
+  problem: '',
+  solution: '',
+  features: [],
+  challenges: '',
   techStack: [],
   liveUrl: '',
   githubUrl: '',
@@ -70,6 +77,13 @@ export function ProjectForm({ mode, projectId, onSaved, onCancel }: ProjectFormP
           title: form.title,
           shortDescription: form.shortDescription,
           description: form.description,
+          role: form.role,
+          duration: form.duration,
+          status: form.status,
+          problem: form.problem,
+          solution: form.solution,
+          features: form.features,
+          challenges: form.challenges,
           techStack: form.techStack,
           liveUrl: form.liveUrl || undefined,
           githubUrl: form.githubUrl || undefined,
@@ -81,6 +95,13 @@ export function ProjectForm({ mode, projectId, onSaved, onCancel }: ProjectFormP
           title: form.title,
           shortDescription: form.shortDescription,
           description: form.description,
+          role: form.role,
+          duration: form.duration,
+          status: form.status,
+          problem: form.problem,
+          solution: form.solution,
+          features: form.features,
+          challenges: form.challenges,
           techStack: form.techStack,
           liveUrl: form.liveUrl || undefined,
           githubUrl: form.githubUrl || undefined,
@@ -139,6 +160,17 @@ export function ProjectForm({ mode, projectId, onSaved, onCancel }: ProjectFormP
         <Field label="Short description" value={form.shortDescription ?? ''} onChange={(event) => setForm((current) => ({ ...current, shortDescription: event.target.value }))} />
       </div>
       <TextArea label="Description" rows={6} value={form.description ?? ''} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} />
+      <div className="grid gap-4 md:grid-cols-3">
+        <Field label="Your role" value={form.role ?? ''} maxLength={80} onChange={(event) => setForm((current) => ({ ...current, role: event.target.value }))} />
+        <Field label="Duration" value={form.duration ?? ''} maxLength={60} placeholder="6 weeks" onChange={(event) => setForm((current) => ({ ...current, duration: event.target.value }))} />
+        <label className="flex flex-col gap-1.5 text-sm text-slate-200"><span className="font-medium text-slate-100">Project status</span><select value={form.status ?? 'completed'} onChange={(event) => setForm((current) => ({ ...current, status: event.target.value as ProjectData['status'] }))} className="w-full rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2.5 text-sm text-white"><option value="completed">Completed</option><option value="in-progress">In progress</option><option value="planned">Planned</option></select></label>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <TextArea label="Problem" rows={4} maxLength={800} value={form.problem ?? ''} onChange={(event) => setForm((current) => ({ ...current, problem: event.target.value }))} />
+        <TextArea label="Solution" rows={4} maxLength={800} value={form.solution ?? ''} onChange={(event) => setForm((current) => ({ ...current, solution: event.target.value }))} />
+      </div>
+      <Field label="Key features (comma separated)" value={(form.features ?? []).join(', ')} onChange={(event) => setForm((current) => ({ ...current, features: event.target.value.split(',').map((value) => value.trim()).filter(Boolean).slice(0, 10) }))} />
+      <TextArea label="Challenges & decisions" rows={4} maxLength={800} value={form.challenges ?? ''} onChange={(event) => setForm((current) => ({ ...current, challenges: event.target.value }))} />
       <Field label="Tech stack (comma separated)" value={(form.techStack ?? []).join(', ')} onChange={(event) => setForm((current) => ({ ...current, techStack: event.target.value.split(',').map((value) => value.trim()).filter(Boolean) }))} />
       <div className="grid gap-4 md:grid-cols-2">
         <Field label="Live URL" value={form.liveUrl ?? ''} onChange={(event) => setForm((current) => ({ ...current, liveUrl: event.target.value }))} />

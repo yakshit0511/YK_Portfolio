@@ -9,6 +9,11 @@ export function ContactInfo() {
   const profile = data.profile;
   const { copied, copy } = useCopyToClipboard();
   const phone = profile?.phone;
+  const availability = profile?.availability;
+  const availabilityStatus = availability?.status || 'open';
+  const availabilityMessage = availability?.message || (availabilityStatus === 'closed'
+    ? 'Not available for opportunities'
+    : availabilityStatus === 'limited' ? 'Limited availability' : 'Open to internships and full-time roles');
   const digits = phone?.replace(/\D/g, '') || '';
   const whatsappNumber = digits.length === 10 ? `91${digits}` : digits;
   const socials = [
@@ -47,6 +52,6 @@ export function ContactInfo() {
         <Icon size={18} />
       </a>)}
     </nav>}
-    <p className="contact-availability"><i aria-hidden="true" />Open to internships and full-time roles</p>
+    <p className={`contact-availability contact-availability--${availabilityStatus}`}><i aria-hidden="true" />{availabilityMessage}</p>
   </div>;
 }

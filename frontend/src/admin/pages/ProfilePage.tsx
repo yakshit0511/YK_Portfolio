@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ImagePlus, Link as LinkIcon, UploadCloud, X } from 'lucide-react';
 import { getProfile, updateProfile, uploadAvatar, uploadResume, removeResume, type ProfileData, getApiMessage } from '../api/adminApi';
-import { Field } from '../components/Field';
+import { Field, SelectField } from '../components/Field';
 import { TextArea } from '../components/TextArea';
 import { Toggle } from '../components/Toggle';
 import { SaveBar } from '../components/SaveBar';
@@ -20,6 +20,8 @@ const initialState: ProfileData = {
   location: '',
   socials: { github: '', linkedin: '', instagram: '' },
   seo: { title: '', description: '' },
+  availability: { status: 'open', message: '' },
+  currentlyLearning: [],
   accentColor: '#2f7bff',
   showPhone: false,
 };
@@ -42,6 +44,8 @@ export function ProfilePage() {
         typingTitles: result.typingTitles ?? [],
         socials: { github: '', linkedin: '', instagram: '', ...(result.socials ?? {}) },
         seo: { title: '', description: '', ...(result.seo ?? {}) },
+        availability: { status: 'open', message: '', ...(result.availability ?? {}) },
+        currentlyLearning: result.currentlyLearning ?? [],
         showPhone: Boolean(result.showPhone),
       });
     }).catch(() => showToast('Could not load profile', 'error')).finally(() => setLoading(false));
@@ -89,6 +93,8 @@ export function ProfilePage() {
         location: profile.location || undefined,
         socials: profile.socials,
         seo: profile.seo,
+        availability: profile.availability,
+        currentlyLearning: profile.currentlyLearning,
         accentColor: profile.accentColor,
       };
       await updateProfile(payload);
@@ -167,6 +173,14 @@ export function ProfilePage() {
     <div className="space-y-6">
       <div className="grid gap-6 xl:grid-cols-2">
         <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+          <h2 className="text-lg font-semibold text-white">Live status</h2>
+          <div className="mt-4 grid gap-4">
+            <SelectField label="Availability" value={profile.availability?.status ?? 'open'} onChange={(value) => patchProfile({ availability: { ...(profile.availability ?? {}), status: value as NonNullable<ProfileData['availability']>['status'] } })} options={[{ value: 'open', label: 'Open to opportunities' }, { value: 'limited', label: 'Limited availability' }, { value: 'closed', label: 'Not available' }]} />
+            <Field label="Status message" value={profile.availability?.message ?? ''} maxLength={100} onChange={(event) => patchProfile({ availability: { ...(profile.availability ?? {}), message: event.target.value } })} />
+            <Field label="Currently learning (comma separated)" value={(profile.currentlyLearning ?? []).join(', ')} onChange={(event) => patchProfile({ currentlyLearning: event.target.value.split(',').map((value) => value.trim()).filter(Boolean).slice(0, 5) })} />
+          </div>
+        </div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
           <h2 className="text-lg font-semibold text-white">Basic info</h2>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <Field label="Full name" value={profile.fullName ?? ''} onChange={(event) => patchProfile({ fullName: event.target.value })} error={errors.fullName} />
@@ -239,7 +253,7 @@ export function ProfilePage() {
           <div className="mt-4 grid gap-4">
             {(['github', 'linkedin', 'instagram'] as const).map((key) => (
               <div key={key} className="space-y-1">
-                <Field label={key.charAt(0).toUpperCase() + key.slice(1)} value={profile.socials?.[key] ?? ''} onChange={(event) => patchProfile({ socials: { ...(profile.socials ?? {}), [key]: event.target.value } })} />
+                <Field label={key.charAt(0).toUpperCase() + key.slice(1)} placeholder={key === 'github' ? 'https://github.com/username' : `https://${key}.com/username`} value={profile.socials?.[key] ?? ''} onChange={(event) => patchProfile({ socials: { ...(profile.socials ?? {}), [key]: event.target.value } })} />
                 <button type="button" className="inline-flex items-center gap-2 text-xs text-blue-300" onClick={() => patchProfile({ socials: { ...(profile.socials ?? {}), [key]: cleanTrackingQuery(profile.socials?.[key]) } })}><LinkIcon size={12} /> Clean link</button>
               </div>
             ))}

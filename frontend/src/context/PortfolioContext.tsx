@@ -31,6 +31,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
               about: result.profile.about || fallbackData.profile!.about,
               socials: { ...fallbackData.profile!.socials, ...result.profile.socials },
               seo: { ...fallbackData.profile!.seo, ...result.profile.seo },
+              availability: { ...fallbackData.profile!.availability, ...result.profile.availability },
             }
           : fallbackData.profile;
         setData({
@@ -38,6 +39,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
           ...result,
           skills: result.skills?.length ? result.skills : fallbackData.skills,
           education: result.education?.length ? result.education : fallbackData.education,
+          certificates: result.certificates ?? [],
           profile: safeProfile,
         });
       })

@@ -18,6 +18,35 @@ const projectSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    role: {
+      type: String,
+      maxlength: 80,
+    },
+    duration: {
+      type: String,
+      maxlength: 60,
+    },
+    status: {
+      type: String,
+      enum: ['completed', 'in-progress', 'planned'],
+      default: 'completed',
+    },
+    problem: {
+      type: String,
+      maxlength: 800,
+    },
+    solution: {
+      type: String,
+      maxlength: 800,
+    },
+    features: [{
+      type: String,
+      maxlength: 120,
+    }],
+    challenges: {
+      type: String,
+      maxlength: 800,
+    },
     images: [
       {
         url: String,

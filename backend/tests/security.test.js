@@ -49,6 +49,7 @@ describe('API security', () => {
       ['get', '/api/admin/projects'], ['get', '/api/admin/skills'],
       ['get', '/api/admin/education'], ['get', '/api/admin/experience'],
       ['get', '/api/admin/sections'], ['get', '/api/admin/inquiries'],
+      ['get', '/api/admin/certificates'], ['get', '/api/admin/insights'],
       ['post', '/api/admin/profile/resume'], ['post', '/api/admin/projects'],
       ['put', '/api/admin/profile'], ['patch', '/api/admin/skills/reorder'],
       ['delete', '/api/admin/profile/resume'],

@@ -4,6 +4,8 @@ import { Hero } from '../components/hero/Hero';
 import { About } from '../components/sections/About';
 import { Skills } from '../components/sections/Skills';
 import { Projects } from '../components/sections/Projects';
+import { Certificates } from '../components/sections/Certificates';
+import { GithubActivity } from '../components/sections/GithubActivity';
 import { Education } from '../components/sections/Education';
 import { Experience } from '../components/sections/Experience';
 import { Contact } from '../components/sections/Contact';
@@ -12,6 +14,8 @@ const sectionElements = {
   about: <About />,
   skills: <Skills />,
   projects: <Projects />,
+  certificates: <Certificates />,
+  github: <GithubActivity />,
   education: <Education />,
   experience: <Experience />,
   contact: <Contact />,

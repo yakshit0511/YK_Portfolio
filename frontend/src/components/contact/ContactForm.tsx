@@ -8,6 +8,7 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { GlowButton } from '../ui/GlowButton';
 import { GlassCard } from '../ui/GlassCard';
 import { SuccessCard } from './SuccessCard';
+import { trackPortfolioEvent } from '../../utils/analytics';
 
 type ContactValues = Omit<ContactPayload, 'startedAt'>;
 type ContactField = keyof Pick<ContactValues, 'name' | 'email' | 'subject' | 'message'>;
@@ -94,6 +95,7 @@ export function ContactForm() {
     try {
       const result = await sendContact({ ...values, startedAt: startedAt.current });
       if (result.ok) {
+        trackPortfolioEvent('contact_submit');
         setSuccess(true);
         return;
       }

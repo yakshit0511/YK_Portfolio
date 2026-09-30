@@ -50,6 +50,7 @@ app.use(['/api/auth', '/api/admin'], (_req, res, next) => {
   next();
 });
 
+app.use('/api/public/track', express.json({ limit: '1kb' }));
 app.use(express.json({
   limit: '1mb',
   type: (req) => req.path !== '/api/public/contact' && req.is('application/json'),

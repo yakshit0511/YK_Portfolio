@@ -1,4 +1,6 @@
+export { default as Certificate } from './Certificate.js';
 export { default as Education } from './Education.js';
+export { default as Event } from './Event.js';
 export { default as Experience } from './Experience.js';
 export { default as Inquiry } from './Inquiry.js';
 export { default as Profile } from './Profile.js';

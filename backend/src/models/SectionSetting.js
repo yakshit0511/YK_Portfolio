@@ -6,7 +6,7 @@ const sectionSettingSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      enum: ['about', 'skills', 'projects', 'education', 'experience', 'contact'],
+      enum: ['about', 'skills', 'projects', 'certificates', 'github', 'education', 'experience', 'contact'],
     },
     title: {
       type: String,

@@ -48,6 +48,21 @@ const profileSchema = new mongoose.Schema(
       title: String,
       description: String,
     },
+    availability: {
+      status: {
+        type: String,
+        enum: ['open', 'limited', 'closed'],
+        default: 'open',
+      },
+      message: {
+        type: String,
+        maxlength: 100,
+      },
+    },
+    currentlyLearning: [{
+      type: String,
+      maxlength: 40,
+    }],
     accentColor: {
       type: String,
       default: '#2f7bff',

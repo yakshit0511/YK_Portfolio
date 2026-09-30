@@ -1,17 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Compass, Github, Instagram, Linkedin, Menu, X } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Compass, Github, Instagram, Linkedin, Menu, Moon, Search, Sun, X } from 'lucide-react';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { scrollToSection } from '../../utils/smoothScroll';
 import { useActiveSection } from '../../hooks/useActiveSection';
 import { useTour } from '../guide/TourProvider';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { getResumeDeliveryUrl } from '../../utils/resumeUrl';
+import { trackPortfolioEvent } from '../../utils/analytics';
 
 export function Navbar() {
   const { data } = usePortfolio();
+  const location = useLocation();
+  const routerNavigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [liteMode, setLiteMode] = useState(() => {
+    try { return window.localStorage.getItem('portfolio-lite-mode') === 'on'; } catch { return false; }
+  });
   const drawerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const { start } = useTour();
@@ -20,6 +27,17 @@ export function Navbar() {
   const active = useActiveSection(sections.map((section) => section.key));
   const resumeUrl = data.profile?.resume?.url;
   const resumePreviewUrl = resumeUrl ? getResumeDeliveryUrl(resumeUrl) : undefined;
+
+  useEffect(() => {
+    document.documentElement.dataset.lite = liteMode ? 'true' : 'false';
+    try { window.localStorage.setItem('portfolio-lite-mode', liteMode ? 'on' : 'off'); } catch { /* Storage is optional. */ }
+  }, [liteMode]);
+
+  useEffect(() => {
+    const toggleLiteMode = () => setLiteMode((value) => !value);
+    window.addEventListener('portfolio:toggle-lite', toggleLiteMode);
+    return () => window.removeEventListener('portfolio:toggle-lite', toggleLiteMode);
+  }, []);
   const socials = [
     { href: data.profile?.socials.github, label: 'GitHub', Icon: Github },
     { href: data.profile?.socials.linkedin, label: 'LinkedIn', Icon: Linkedin },
@@ -54,8 +72,12 @@ export function Navbar() {
   }, [open]);
 
   const navigate = (id: string) => {
-    scrollToSection(id);
     setOpen(false);
+    if (location.pathname !== '/') {
+      routerNavigate(`/#${id}`);
+      return;
+    }
+    scrollToSection(id);
   };
 
   return (
@@ -70,9 +92,11 @@ export function Navbar() {
           ))}
         </div>
         <div className="nav-actions">
-          {resumePreviewUrl && <a className="resume-link" href={resumePreviewUrl} target="_blank" rel="noopener noreferrer">Resume</a>}
+          <button className="nav-icon-button" type="button" aria-label="Open command palette" title="Search sections and projects (Ctrl+K)" onClick={() => window.dispatchEvent(new CustomEvent('portfolio:open-command-palette'))}><Search size={17} /></button>
+          <button className="nav-icon-button" type="button" aria-label={liteMode ? 'Disable lite mode' : 'Enable lite mode'} aria-pressed={liteMode} title={liteMode ? 'Disable lite mode' : 'Enable lite mode'} onClick={() => setLiteMode((value) => !value)}>{liteMode ? <Sun size={17} /> : <Moon size={17} />}</button>
+          {resumePreviewUrl && <a className="resume-link" href={resumePreviewUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackPortfolioEvent('resume_download')}>Resume</a>}
           <div className="nav-socials">
-            {socials.map(({ href, label, Icon }) => <a key={label} href={href} aria-label={label} target="_blank" rel="noopener noreferrer"><Icon size={17} /></a>)}
+            {socials.map(({ href, label, Icon }) => <a key={label} href={href} aria-label={label} target="_blank" rel="noopener noreferrer" onClick={() => trackPortfolioEvent('social_click', label.toLowerCase())}><Icon size={17} /></a>)}
           </div>
           <button className="nav-tour-button" type="button" onClick={start}><Compass size={16} />Tour</button>
           <button ref={triggerRef} className="menu-toggle" type="button" aria-label={open ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button>
@@ -83,8 +107,10 @@ export function Navbar() {
           <p className="drawer-label">Navigate</p>
           {sections.map((section) => <a key={section.key} className={active === section.key ? 'is-active' : ''} href={`#${section.key}`} onClick={(event) => { event.preventDefault(); navigate(section.key); }}>{section.title}</a>)}
           <button className="nav-tour-button" type="button" onClick={() => { setOpen(false); start(); }}><Compass size={17} />Take a quick tour</button>
+          <button className="nav-icon-button" type="button" aria-label="Open command palette" onClick={() => { setOpen(false); window.dispatchEvent(new CustomEvent('portfolio:open-command-palette')); }}><Search size={17} /> Search</button>
+          <button className="nav-icon-button" type="button" aria-pressed={liteMode} onClick={() => setLiteMode((value) => !value)}>{liteMode ? <Sun size={17} /> : <Moon size={17} />} {liteMode ? 'Standard mode' : 'Lite mode'}</button>
           {resumePreviewUrl && <a className="resume-link" href={resumePreviewUrl} target="_blank" rel="noopener noreferrer">Resume</a>}
-          <div className="drawer-socials">{socials.map(({ href, label, Icon }) => <a key={label} href={href} aria-label={label} target="_blank" rel="noopener noreferrer"><Icon size={18} /></a>)}</div>
+          <div className="drawer-socials">{socials.map(({ href, label, Icon }) => <a key={label} href={href} aria-label={label} target="_blank" rel="noopener noreferrer" onClick={() => trackPortfolioEvent('social_click', label.toLowerCase())}><Icon size={18} /></a>)}</div>
         </motion.div>}
       </AnimatePresence>
     </header>

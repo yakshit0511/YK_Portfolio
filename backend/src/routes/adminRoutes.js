@@ -3,9 +3,11 @@ import { body, param } from 'express-validator';
 
 import {
   createEducation,
+  createCertificate,
   createExperience,
   createProject,
   createSkill,
+  deleteCertificate,
   deleteEducation,
   deleteExperience,
   deleteInquiry,
@@ -14,8 +16,10 @@ import {
   deleteProjectImage,
   deleteSkill,
   getDashboardStats,
+  getCertificates,
   getEducation,
   getExperience,
+  getInsights,
   getInquiries,
   getInquiryById,
   getProfile,
@@ -23,15 +27,18 @@ import {
   getSections,
   getSkills,
   reorderEducation,
+  reorderCertificates,
   reorderExperience,
   reorderProjects,
   reorderSkills,
   resendInquiryEmail,
+  updateCertificate,
   updateEducation,
   updateExperience,
   updateInquiryStatus,
   updateProfile,
   updateProject,
+  uploadCertificateImage,
   updateSections,
   updateSkill,
   uploadProfileAvatar,
@@ -59,7 +66,7 @@ router.get('/profile', getProfile);
 router.put(
   '/profile',
   [
-    rejectUnknownFields(['fullName', 'siteName', 'typingTitles', 'about', 'email', 'phone', 'showPhone', 'location', 'socials', 'seo', 'accentColor']),
+    rejectUnknownFields(['fullName', 'siteName', 'typingTitles', 'about', 'email', 'phone', 'showPhone', 'location', 'socials', 'seo', 'availability', 'currentlyLearning', 'accentColor']),
     body('fullName').optional().isString(),
     body('siteName').optional().isString(),
     body('typingTitles').optional().isArray(),
@@ -70,6 +77,11 @@ router.put(
     body('location').optional().isString(),
     body('socials').optional().isObject(),
     body('seo').optional().isObject(),
+    body('availability').optional().isObject(),
+    body('availability.status').optional().isIn(['open', 'limited', 'closed']),
+    body('availability.message').optional().isString().isLength({ max: 100 }),
+    body('currentlyLearning').optional().isArray({ max: 5 }),
+    body('currentlyLearning.*').optional().isString().isLength({ max: 40 }),
     body('accentColor').optional().isString(),
   ],
   validate,
@@ -83,8 +95,11 @@ router.get('/projects', getProjects);
 router.post(
   '/projects',
   [
-    rejectUnknownFields(['title', 'shortDescription', 'description', 'techStack', 'liveUrl', 'githubUrl', 'featured', 'visible', 'order']),
+    rejectUnknownFields(['title', 'shortDescription', 'description', 'role', 'duration', 'status', 'problem', 'solution', 'features', 'challenges', 'techStack', 'liveUrl', 'githubUrl', 'featured', 'visible', 'order']),
     body('title').notEmpty().withMessage('Project title is required.'),
+    body('status').optional().isIn(['completed', 'in-progress', 'planned']),
+    body('features').optional().isArray({ max: 10 }),
+    body('features.*').optional().isString().isLength({ max: 120 }),
     body('liveUrl').optional({ checkFalsy: true }).isURL().withMessage('liveUrl must be a valid URL.'),
     body('githubUrl').optional({ checkFalsy: true }).isURL().withMessage('githubUrl must be a valid URL.'),
   ],
@@ -95,8 +110,11 @@ router.put(
   '/projects/:id',
   [
     param('id').isMongoId().withMessage('Invalid project ID.'),
-    rejectUnknownFields(['title', 'shortDescription', 'description', 'techStack', 'liveUrl', 'githubUrl', 'featured', 'visible', 'order']),
+    rejectUnknownFields(['title', 'shortDescription', 'description', 'role', 'duration', 'status', 'problem', 'solution', 'features', 'challenges', 'techStack', 'liveUrl', 'githubUrl', 'featured', 'visible', 'order']),
     body('title').optional().notEmpty().withMessage('Project title cannot be empty.'),
+    body('status').optional().isIn(['completed', 'in-progress', 'planned']),
+    body('features').optional().isArray({ max: 10 }),
+    body('features.*').optional().isString().isLength({ max: 120 }),
     body('liveUrl').optional({ checkFalsy: true }).isURL().withMessage('liveUrl must be a valid URL.'),
     body('githubUrl').optional({ checkFalsy: true }).isURL().withMessage('githubUrl must be a valid URL.'),
   ],
@@ -162,6 +180,35 @@ router.patch('/experience/reorder', reorderExperience);
 
 router.get('/sections', getSections);
 router.put('/sections', rejectUnknownFields(['key', 'title', 'visible', 'order']), updateSections);
+
+router.get('/certificates', getCertificates);
+router.post(
+  '/certificates',
+  [
+    rejectUnknownFields(['title', 'issuer', 'type', 'issueDate', 'credentialId', 'credentialUrl', 'image', 'description', 'visible', 'order']),
+    body('title').notEmpty().withMessage('Certificate title is required.'),
+    body('type').optional().isIn(['certificate', 'achievement', 'award']).withMessage('Certificate type is invalid.'),
+    body('credentialUrl').optional({ checkFalsy: true }).isURL({ protocols: ['https'], require_protocol: true }).withMessage('credentialUrl must be a valid https URL.'),
+  ],
+  validate,
+  createCertificate
+);
+router.put(
+  '/certificates/:id',
+  [
+    param('id').isMongoId().withMessage('Invalid certificate ID.'),
+    rejectUnknownFields(['title', 'issuer', 'type', 'issueDate', 'credentialId', 'credentialUrl', 'image', 'description', 'visible', 'order']),
+    body('type').optional().isIn(['certificate', 'achievement', 'award']).withMessage('Certificate type is invalid.'),
+    body('credentialUrl').optional({ checkFalsy: true }).isURL({ protocols: ['https'], require_protocol: true }).withMessage('credentialUrl must be a valid https URL.'),
+  ],
+  validate,
+  updateCertificate
+);
+router.delete('/certificates/:id', [param('id').isMongoId().withMessage('Invalid certificate ID.')], validate, deleteCertificate);
+router.patch('/certificates/reorder', reorderCertificates);
+router.post('/certificates/:id/image', uploadImage.single('image'), uploadCertificateImage);
+
+router.get('/insights', getInsights);
 
 router.get('/inquiries', getInquiries);
 router.post('/inquiries/:id/resend-email', [param('id').isMongoId().withMessage('Invalid inquiry ID.')], validate, resendInquiryEmail);

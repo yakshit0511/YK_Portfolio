@@ -4,12 +4,15 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 
 import { createInquiry, rejectUnknownContactFields, validateContact } from '../controllers/contactController.js';
-import { getPortfolio, getResume } from '../controllers/publicController.js';
+import { getGithubActivity, getPortfolio, getProjectBySlug, getResume, trackEvent } from '../controllers/publicController.js';
 import { originCheck } from '../middleware/csrf.js';
 
 const router = Router();
 
 router.get('/portfolio', getPortfolio);
+router.get('/projects/:slug', getProjectBySlug);
+router.get('/github', getGithubActivity);
+router.post('/track', express.json({ limit: '1kb' }), trackEvent);
 router.get('/resume', getResume);
 
 const contactLimitHandler = (retryAfterSeconds) => (_req, res) => {
@@ -33,6 +36,14 @@ const dailyContactLimiter = rateLimit({
 	handler: contactLimitHandler(24 * 60 * 60),
 });
 
+const trackingLimiter = rateLimit({
+	windowMs: 15 * 60 * 1000,
+	max: 60,
+	standardHeaders: true,
+	legacyHeaders: false,
+	handler: (_req, res) => res.status(204).end(),
+});
+
 const contactValidation = [
 	body('name').isString().withMessage('Please enter your name.').bail().isLength({ max: 100 }).withMessage('Name must be 100 characters or fewer.').bail().custom((value) => value.trim().length >= 2).withMessage('Name must be at least 2 characters.'),
 	body('email').isString().withMessage('Please enter a valid email address.').bail().trim().isEmail().withMessage('Please enter a valid email address.').bail().isLength({ max: 254 }).withMessage('Email must be 254 characters or fewer.').bail().customSanitizer((value) => value.toLowerCase()),
@@ -53,5 +64,7 @@ router.post(
 	validateContact,
 	createInquiry
 );
+
+router.post('/track', trackingLimiter, trackEvent);
 
 export default router;

@@ -10,6 +10,8 @@ import { Login } from './pages/Login';
 const Dashboard = lazy(() => import('./pages/Dashboard').then((module) => ({ default: module.Dashboard })));
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then((module) => ({ default: module.ProfilePage })));
 const ProjectsPage = lazy(() => import('./pages/ProjectsPage').then((module) => ({ default: module.ProjectsPage })));
+const CertificatesPage = lazy(() => import('./pages/CertificatesPage').then((module) => ({ default: module.CertificatesPage })));
+const InsightsPage = lazy(() => import('./pages/InsightsPage').then((module) => ({ default: module.InsightsPage })));
 const SkillsPage = lazy(() => import('./pages/SkillsPage').then((module) => ({ default: module.SkillsPage })));
 const EducationPage = lazy(() => import('./pages/EducationPage').then((module) => ({ default: module.EducationPage })));
 const ExperiencePage = lazy(() => import('./pages/ExperiencePage').then((module) => ({ default: module.ExperiencePage })));
@@ -47,6 +49,8 @@ function AppShell() {
       <Route path={`${adminPath}/content-manager`} element={<ProtectedRoute><AdminLayout title="Content manager"><Suspense fallback={<div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-slate-300">Loading content manager…</div>}><ContentManagerPage /></Suspense></AdminLayout></ProtectedRoute>} />
       <Route path={`${adminPath}/profile`} element={<ProtectedRoute><AdminLayout title="Profile & About"><Suspense fallback={<div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-slate-300">Loading profile…</div>}><ProfilePage /></Suspense></AdminLayout></ProtectedRoute>} />
       <Route path={`${adminPath}/projects`} element={<ProtectedRoute><AdminLayout title="Projects"><Suspense fallback={<div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-slate-300">Loading projects…</div>}><ProjectsPage /></Suspense></AdminLayout></ProtectedRoute>} />
+      <Route path={`${adminPath}/certificates`} element={<ProtectedRoute><AdminLayout title="Certificates"><Suspense fallback={<div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-slate-300">Loading certificates…</div>}><CertificatesPage /></Suspense></AdminLayout></ProtectedRoute>} />
+      <Route path={`${adminPath}/insights`} element={<ProtectedRoute><AdminLayout title="Insights"><Suspense fallback={<div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-slate-300">Loading insights…</div>}><InsightsPage /></Suspense></AdminLayout></ProtectedRoute>} />
       <Route path={`${adminPath}/skills`} element={<ProtectedRoute><AdminLayout title="Skills"><Suspense fallback={<div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-slate-300">Loading skills…</div>}><SkillsPage /></Suspense></AdminLayout></ProtectedRoute>} />
       <Route path={`${adminPath}/education`} element={<ProtectedRoute><AdminLayout title="Education"><Suspense fallback={<div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-slate-300">Loading education…</div>}><EducationPage /></Suspense></AdminLayout></ProtectedRoute>} />
       <Route path={`${adminPath}/experience`} element={<ProtectedRoute><AdminLayout title="Experience"><Suspense fallback={<div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-slate-300">Loading experience…</div>}><ExperiencePage /></Suspense></AdminLayout></ProtectedRoute>} />

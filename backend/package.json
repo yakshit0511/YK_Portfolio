@@ -11,6 +11,7 @@
     "start": "node src/server.js",
     "seed": "node src/seed.js",
     "seed:force": "node src/seed.js --force",
+    "migrate:bonus": "node scripts/migrate-bonus.js",
     "create-admin": "node src/scripts/createAdmin.js",
     "test": "vitest run",
     "test:watch": "vitest"

@@ -10,7 +10,9 @@ npm install
 npm run dev
 ```
 
-Set `VITE_API_URL` and `VITE_ADMIN_PATH` in `.env.local` as needed. The site can render without the backend; API data replaces the fallback profile after the request completes.
+Set `VITE_ADMIN_PATH` in `.env.local` as needed. Local development calls the backend at `http://localhost:5000`; Vercel production proxies `/api` to the Render service through `vercel.json`, keeping admin cookies first-party. The site can render without the backend; API data replaces the fallback profile after the request completes.
+
+The public site includes certificate and GitHub sections, project case studies at `/projects/:slug`, a `Ctrl+K` / `Cmd+K` command palette, and a persisted lite-mode toggle. Anonymous insights are opt-in; the site sends no analytics until a visitor accepts, and the choice can be changed from the footer privacy control. Existing databases need the additive `npm run migrate:bonus` command from the backend before legacy projects receive their case-study URLs.
 
 ## Build
 
@@ -34,8 +36,8 @@ Add supplied media under `public/` using the current filenames:
 - `images/brand/Logo.png` (used as the favicon)
 - `images/guide/` contains the supplied pointing illustrations for Prompt 4
 
-Vercel's `vercel.json` is strict JSON and cannot contain comments. To proxy API requests through the frontend domain for first-party cookies, add this rewrite before the SPA catch-all and replace the Render host:
+Vercel's `vercel.json` is strict JSON and cannot contain comments. The API rewrite must target the active Render backend service and stay before the SPA catch-all:
 
 ```jsonc
-{ "source": "/api/(.*)", "destination": "https://YOUR-RENDER-SERVICE.onrender.com/api/$1" }
+{ "source": "/api/:path*", "destination": "https://yk-portfolio-ext4.onrender.com/api/:path*" }
 ```

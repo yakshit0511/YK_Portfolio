@@ -15,15 +15,19 @@ export const fallbackData: PortfolioData = {
       title: 'Yakshit Portfolio | Full Stack MERN Developer',
       description: 'Yakshit Koshiya is a Full Stack MERN Developer building modern, responsive web applications.',
     },
+    availability: { status: 'open', message: 'Open to internships and full-time roles' },
+    currentlyLearning: ['Next.js', 'TypeScript', 'System design'],
     accentColor: '#2f7bff',
   },
   sections: [
     { key: 'about', title: 'About', visible: true, order: 0 },
     { key: 'skills', title: 'Skills', visible: true, order: 1 },
     { key: 'projects', title: 'Projects', visible: true, order: 2 },
-    { key: 'education', title: 'Education', visible: true, order: 3 },
-    { key: 'experience', title: 'Experience', visible: true, order: 4 },
-    { key: 'contact', title: 'Contact', visible: true, order: 5 },
+    { key: 'certificates', title: 'Certificates', visible: true, order: 3 },
+    { key: 'github', title: 'GitHub', visible: true, order: 4 },
+    { key: 'education', title: 'Education', visible: true, order: 5 },
+    { key: 'experience', title: 'Experience', visible: true, order: 6 },
+    { key: 'contact', title: 'Contact', visible: true, order: 7 },
   ],
   skills: [
     { category: 'Frontend', items: [
@@ -51,6 +55,7 @@ export const fallbackData: PortfolioData = {
     ] },
   ],
   projects: [],
+  certificates: [],
   education: [
     {
       institution: 'CHARUSAT University', degree: 'B.Tech', field: 'Information Technology', startYear: 2023,

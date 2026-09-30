@@ -1,12 +1,14 @@
 import { lazy, Suspense, useCallback, useMemo, useState } from 'react';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { ExternalLink, Github, MoreHorizontal } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { GuideCharacter } from '../guide/GuideCharacter';
 import { SectionHeading } from '../ui/SectionHeading';
 import { TiltCard } from '../ui/TiltCard';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { cloudinaryImageUrl } from '../../utils/cloudinaryUrl';
+import { trackPortfolioEvent } from '../../utils/analytics';
 
 const ProjectModal = lazy(() => import('./ProjectModal'));
 
@@ -56,8 +58,9 @@ export function Projects() {
                   </div>
                 </button>
                 <div className="project-card-links">
-                  {project.liveUrl && <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" aria-label={`Open ${project.title} live demo`} onClick={(event) => event.stopPropagation()}><ExternalLink size={17} /></a>}
-                  {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" aria-label={`Open ${project.title} source code`} onClick={(event) => event.stopPropagation()}><Github size={17} /></a>}
+                  {project.slug && <Link to={`/projects/${project.slug}`} aria-label={`Read the ${project.title} case study`}><MoreHorizontal size={17} /></Link>}
+                  {project.liveUrl && <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" aria-label={`Open ${project.title} live demo`} onClick={(event) => { event.stopPropagation(); trackPortfolioEvent('project_link', project.slug); }}><ExternalLink size={17} /></a>}
+                  {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" aria-label={`Open ${project.title} source code`} onClick={(event) => { event.stopPropagation(); trackPortfolioEvent('project_link', project.slug); }}><Github size={17} /></a>}
                 </div>
               </TiltCard>
             </motion.article>)}</AnimatePresence>

@@ -8,6 +8,8 @@ const sectionOrder: Array<{ key: SectionData['key']; title: string }> = [
   { key: 'about', title: 'About' },
   { key: 'skills', title: 'Skills' },
   { key: 'projects', title: 'Projects' },
+  { key: 'certificates', title: 'Certificates' },
+  { key: 'github', title: 'GitHub' },
   { key: 'education', title: 'Education' },
   { key: 'experience', title: 'Experience' },
   { key: 'contact', title: 'Contact' },

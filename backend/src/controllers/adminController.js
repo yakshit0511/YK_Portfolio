@@ -1,4 +1,6 @@
+import Certificate from '../models/Certificate.js';
 import Education from '../models/Education.js';
+import Event from '../models/Event.js';
 import Experience from '../models/Experience.js';
 import Inquiry from '../models/Inquiry.js';
 import Profile from '../models/Profile.js';
@@ -19,6 +21,8 @@ const allowedProfileFields = [
   'location',
   'socials',
   'seo',
+  'availability',
+  'currentlyLearning',
   'accentColor',
 ];
 
@@ -26,6 +30,13 @@ const allowedProjectFields = [
   'title',
   'shortDescription',
   'description',
+  'role',
+  'duration',
+  'status',
+  'problem',
+  'solution',
+  'features',
+  'challenges',
   'techStack',
   'liveUrl',
   'githubUrl',
@@ -71,6 +82,15 @@ const isValidUrl = (value) => {
     const parsed = new URL(value);
     return ['http:', 'https:'].includes(parsed.protocol);
   } catch (error) {
+    return false;
+  }
+};
+
+const isValidHttpsUrl = (value) => {
+  if (!value) return true;
+  try {
+    return new URL(value).protocol === 'https:';
+  } catch {
     return false;
   }
 };
@@ -141,6 +161,24 @@ export const updateProfile = async (req, res) => {
 
     if (payload.typingTitles && Array.isArray(payload.typingTitles)) {
       payload.typingTitles = payload.typingTitles.map((title) => String(title).trim()).filter(Boolean);
+    }
+
+    if (payload.currentlyLearning && Array.isArray(payload.currentlyLearning)) {
+      payload.currentlyLearning = payload.currentlyLearning
+        .slice(0, 5)
+        .map((value) => String(value).trim())
+        .filter(Boolean)
+        .map((value) => value.slice(0, 40));
+    }
+
+    if (payload.availability && typeof payload.availability === 'object') {
+      const status = ['open', 'limited', 'closed'].includes(payload.availability.status)
+        ? payload.availability.status
+        : 'open';
+      payload.availability = {
+        status,
+        message: String(payload.availability.message || '').slice(0, 100),
+      };
     }
 
     if (payload.socials && typeof payload.socials === 'object') {
@@ -286,6 +324,14 @@ export const createProject = async (req, res) => {
       return res.status(400).json({ message: 'githubUrl must be a valid URL.' });
     }
 
+    if (payload.status && !['completed', 'in-progress', 'planned'].includes(payload.status)) {
+      return res.status(400).json({ message: 'status must be one of completed, in-progress, or planned.' });
+    }
+
+    if (payload.features && Array.isArray(payload.features)) {
+      payload.features = payload.features.slice(0, 10).map((value) => String(value).slice(0, 120));
+    }
+
     const slug = await makeUniqueSlug(payload.title);
     const project = await Project.create({
       ...payload,
@@ -324,6 +370,14 @@ export const updateProject = async (req, res) => {
 
     if (payload.githubUrl && !isValidUrl(payload.githubUrl)) {
       return res.status(400).json({ message: 'githubUrl must be a valid URL.' });
+    }
+
+    if (payload.status && !['completed', 'in-progress', 'planned'].includes(payload.status)) {
+      return res.status(400).json({ message: 'status must be one of completed, in-progress, or planned.' });
+    }
+
+    if (payload.features && Array.isArray(payload.features)) {
+      payload.features = payload.features.slice(0, 10).map((value) => String(value).slice(0, 120));
     }
 
     Object.assign(project, payload);
@@ -753,7 +807,7 @@ export const getSections = async (req, res) => {
 export const updateSections = async (req, res) => {
   try {
     const payload = Array.isArray(req.body) ? req.body : [];
-    const allowedKeys = ['about', 'skills', 'projects', 'education', 'experience', 'contact'];
+    const allowedKeys = ['about', 'skills', 'projects', 'certificates', 'github', 'education', 'experience', 'contact'];
 
     const updates = await Promise.all(
       payload.map(async (item) => {
@@ -923,6 +977,275 @@ export const deleteInquiry = async (req, res) => {
       message: process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message,
     });
   }
+};
+
+export const getCertificates = async (req, res) => {
+  try {
+    const certificates = await Certificate.find().sort({ order: 1, createdAt: -1 }).lean();
+    return res.status(200).json(certificates);
+  } catch (error) {
+    return res.status(500).json({
+      message: process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message,
+    });
+  }
+};
+
+export const createCertificate = async (req, res) => {
+  try {
+    const payload = pickAllowedFields(req.body, ['title', 'issuer', 'type', 'issueDate', 'credentialId', 'credentialUrl', 'image', 'description', 'visible', 'order']);
+
+    if (!payload.title || !String(payload.title).trim()) {
+      return res.status(400).json({ message: 'Certificate title is required.' });
+    }
+
+    if (payload.type && !['certificate', 'achievement', 'award'].includes(payload.type)) {
+      return res.status(400).json({ message: 'Certificate type is invalid.' });
+    }
+
+    if (payload.credentialUrl && !isValidHttpsUrl(payload.credentialUrl)) {
+      return res.status(400).json({ message: 'credentialUrl must be a valid https URL.' });
+    }
+
+    const certificate = await Certificate.create({
+      ...payload,
+      visible: payload.visible !== false,
+      order: Number(payload.order) || 0,
+    });
+
+    return res.status(201).json(certificate);
+  } catch (error) {
+    return res.status(500).json({
+      message: process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message,
+    });
+  }
+};
+
+export const updateCertificate = async (req, res) => {
+  try {
+    const certificate = await Certificate.findById(req.params.id);
+
+    if (!certificate) {
+      return res.status(404).json({ message: 'Certificate not found.' });
+    }
+
+    const payload = pickAllowedFields(req.body, ['title', 'issuer', 'type', 'issueDate', 'credentialId', 'credentialUrl', 'image', 'description', 'visible', 'order']);
+
+    if (payload.type && !['certificate', 'achievement', 'award'].includes(payload.type)) {
+      return res.status(400).json({ message: 'Certificate type is invalid.' });
+    }
+
+    if (payload.credentialUrl && !isValidHttpsUrl(payload.credentialUrl)) {
+      return res.status(400).json({ message: 'credentialUrl must be a valid https URL.' });
+    }
+
+    Object.assign(certificate, payload);
+    await certificate.save();
+    return res.status(200).json(certificate);
+  } catch (error) {
+    return res.status(500).json({
+      message: process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message,
+    });
+  }
+};
+
+export const deleteCertificate = async (req, res) => {
+  try {
+    const certificate = await Certificate.findById(req.params.id);
+
+    if (!certificate) {
+      return res.status(404).json({ message: 'Certificate not found.' });
+    }
+
+    if (certificate.image?.publicId) {
+      await deleteAsset(certificate.image.publicId, 'image');
+    }
+
+    await certificate.deleteOne();
+    return res.status(200).json({ message: 'Certificate deleted successfully.' });
+  } catch (error) {
+    return res.status(500).json({
+      message: process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message,
+    });
+  }
+};
+
+export const reorderCertificates = async (req, res) => {
+  try {
+    const updates = Array.isArray(req.body) ? req.body : [];
+
+    await Promise.all(
+      updates.map(async (item) => {
+        const certificate = await Certificate.findById(item.id);
+        if (certificate) {
+          certificate.order = Number(item.order) || 0;
+          await certificate.save();
+        }
+      })
+    );
+
+    const list = await Certificate.find().sort({ order: 1, createdAt: -1 });
+    return res.status(200).json(list);
+  } catch (error) {
+    return res.status(500).json({
+      message: process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message,
+    });
+  }
+};
+
+export const uploadCertificateImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'Image file is required.' });
+    }
+
+    const certificate = await Certificate.findById(req.params.id);
+    if (!certificate) {
+      return res.status(404).json({ message: 'Certificate not found.' });
+    }
+
+    if (certificate.image?.publicId) {
+      await deleteAsset(certificate.image.publicId, 'image');
+    }
+
+    const result = await uploadBuffer(req.file.buffer, {
+      folder: 'yakshit-portfolio/certificates',
+      resourceType: 'image',
+    });
+
+    certificate.image = {
+      url: result.url,
+      publicId: result.publicId,
+    };
+
+    await certificate.save();
+    return res.status(200).json(certificate);
+  } catch (error) {
+    return res.status(500).json({
+      message: process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message,
+    });
+  }
+};
+
+export const getInsights = async (req, res) => {
+  try {
+    const rawRange = String(req.query.range || '30');
+    const range = ['7', '30', '90'].includes(rawRange) ? Number(rawRange) : 30;
+    const { startDay, endDay } = getDayRange(range);
+    const events = await Event.find({ day: { $gte: startDay, $lte: endDay } }).lean();
+
+    const dailyMap = new Map();
+    const [startYear, startMonth, startDate] = startDay.split('-').map(Number);
+    const dayValues = Array.from({ length: range }, (_value, index) => {
+      const date = new Date(Date.UTC(startYear, startMonth - 1, startDate + index, 6));
+      return formatDayLocal(date);
+    });
+    for (const day of dayValues) {
+      dailyMap.set(day, { day, views: 0, unique: 0, uniqueSet: new Set() });
+    }
+
+    const uniqueVisitors = new Set();
+    for (const event of events) {
+      const day = dailyMap.get(event.day);
+      if (!day) continue;
+      day.views += event.type === 'pageview' ? 1 : 0;
+      day.uniqueSet.add(event.visitorHash);
+      uniqueVisitors.add(event.visitorHash);
+    }
+
+    const daily = dayValues.map((day) => {
+      const entry = dailyMap.get(day);
+      const unique = entry ? entry.uniqueSet.size : 0;
+      return {
+        day,
+        views: entry ? entry.views : 0,
+        unique,
+      };
+    });
+
+    const totals = {
+      views: daily.reduce((sum, item) => sum + item.views, 0),
+      uniqueVisitors: daily.reduce((sum, item) => sum + item.unique, 0),
+      projectViews: events.filter((event) => event.type === 'project_view').length,
+      projectLinkClicks: events.filter((event) => event.type === 'project_link').length,
+      resumeDownloads: events.filter((event) => event.type === 'resume_download').length,
+      socialClicks: events.filter((event) => event.type === 'social_click').length,
+      contactSubmits: events.filter((event) => event.type === 'contact_submit').length,
+    };
+
+    const projectGroups = new Map();
+    for (const event of events) {
+      if (!event.target || !['project_view', 'project_link'].includes(event.type)) continue;
+      const key = event.target;
+      const project = projectGroups.get(key) || { slug: key, views: 0, linkClicks: 0 };
+      if (event.type === 'project_view') project.views += 1;
+      if (event.type === 'project_link') project.linkClicks += 1;
+      projectGroups.set(key, project);
+    }
+
+    const projectList = await Promise.all(
+      [...projectGroups.entries()]
+        .sort((a, b) => (b[1].views + b[1].linkClicks) - (a[1].views + a[1].linkClicks))
+        .slice(0, 5)
+        .map(async ([slug, data]) => {
+          const project = await Project.findOne({ slug }).select('title slug').lean();
+          return {
+            slug,
+            title: project?.title || slug,
+            views: data.views,
+            linkClicks: data.linkClicks,
+          };
+        })
+    );
+
+    const referrerGroups = new Map();
+    for (const event of events) {
+      if (!event.referrerHost) continue;
+      referrerGroups.set(event.referrerHost, (referrerGroups.get(event.referrerHost) || 0) + 1);
+    }
+
+    const topReferrers = [...referrerGroups.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([host, count]) => ({ host, count }));
+
+    const devices = { mobile: 0, desktop: 0 };
+    for (const event of events) {
+      if (event.device === 'mobile') devices.mobile += 1;
+      if (event.device === 'desktop') devices.desktop += 1;
+    }
+
+    return res.status(200).json({
+      range,
+      totals,
+      daily,
+      topProjects: projectList,
+      topReferrers,
+      devices,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message,
+    });
+  }
+};
+
+const formatDayLocal = (date) => {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date).replace(/\//g, '-');
+};
+
+const getDayRange = (range) => {
+  const endDay = formatDayLocal(new Date());
+  const [year, month, day] = endDay.split('-').map(Number);
+  const startDate = new Date(Date.UTC(year, month - 1, day - range + 1, 6));
+  return {
+    startDay: formatDayLocal(startDate),
+    endDay,
+  };
 };
 
 export const getDashboardStats = async (req, res) => {

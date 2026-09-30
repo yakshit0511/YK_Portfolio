@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, Building2, FileText, GraduationCap, LayoutGrid, ListFilter, LockKeyhole, PencilRuler, Settings, UserRound, Wrench } from 'lucide-react';
+import { Award, BarChart3, BriefcaseBusiness, Building2, FileText, GraduationCap, LayoutGrid, ListFilter, LockKeyhole, PencilRuler, Settings, UserRound, Wrench } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { getEnvAdminPath } from '../api/adminApi';
 
@@ -9,6 +9,8 @@ const navItems = [
   { label: 'Content manager', to: `${basePath}/content-manager`, icon: ListFilter },
   { label: 'Profile & About', to: `${basePath}/profile`, icon: UserRound },
   { label: 'Projects', to: `${basePath}/projects`, icon: PencilRuler },
+  { label: 'Certificates', to: `${basePath}/certificates`, icon: Award },
+  { label: 'Insights', to: `${basePath}/insights`, icon: BarChart3 },
   { label: 'Skills', to: `${basePath}/skills`, icon: Wrench },
   { label: 'Education', to: `${basePath}/education`, icon: GraduationCap },
   { label: 'Experience', to: `${basePath}/experience`, icon: BriefcaseBusiness },

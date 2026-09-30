@@ -31,6 +31,11 @@ const profileData = {
     title: 'Yakshit Portfolio | Full Stack MERN Developer',
     description: '',
   },
+  availability: {
+    status: 'open',
+    message: 'Open to internships and full-time roles',
+  },
+  currentlyLearning: ['Next.js', 'TypeScript', 'System design'],
   about:
     "I'm Yakshit Koshiya, a B.Tech Information Technology student and Full Stack MERN Developer. I enjoy building modern, responsive, and user-friendly web applications using technologies like React, Node.js, Express.js, and MongoDB.\n\nI have hands-on experience developing real-world projects, including business websites, ERP systems, admin panels, REST APIs, and WhatsApp API integrations. I'm passionate about learning new technologies, solving problems, and turning ideas into practical digital solutions.\n\nCurrently, I'm looking for opportunities where I can apply my skills, gain industry experience, and grow as a professional software developer.",
   accentColor: '#2f7bff',
@@ -118,9 +123,11 @@ const sectionSettingData = [
   { key: 'about', title: 'About', visible: true, order: 0 },
   { key: 'skills', title: 'Skills', visible: true, order: 1 },
   { key: 'projects', title: 'Projects', visible: true, order: 2 },
-  { key: 'education', title: 'Education', visible: true, order: 3 },
-  { key: 'experience', title: 'Experience', visible: true, order: 4 },
-  { key: 'contact', title: 'Contact', visible: true, order: 5 },
+  { key: 'certificates', title: 'Certificates', visible: true, order: 3 },
+  { key: 'github', title: 'GitHub', visible: true, order: 4 },
+  { key: 'education', title: 'Education', visible: true, order: 5 },
+  { key: 'experience', title: 'Experience', visible: true, order: 6 },
+  { key: 'contact', title: 'Contact', visible: true, order: 7 },
 ];
 
 export const seedDatabase = async ({ force = process.argv.includes('--force') } = {}) => {

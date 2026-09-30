@@ -6,12 +6,16 @@ import { Footer } from './components/layout/Footer';
 import { BackgroundScene } from './components/layout/BackgroundScene';
 import { Loader } from './components/layout/Loader';
 import { Home } from './pages/Home';
+import { ProjectCaseStudy } from './pages/ProjectCaseStudy';
 import { NotFound } from './pages/NotFound';
 import { useReducedMotion } from './hooks/useReducedMotion';
-import { setSmoothScroller } from './utils/smoothScroll';
+import { scrollToSection, setSmoothScroller } from './utils/smoothScroll';
 import { HeroProvider, useHeroContext } from './context/HeroContext';
 import { TourProvider, useTour } from './components/guide/TourProvider';
 import { getOptimizedImageSrc } from './utils/imageSources';
+import { CommandPalette } from './components/layout/CommandPalette';
+import { PrivacyConsent } from './components/layout/PrivacyConsent';
+import { trackPortfolioEvent } from './utils/analytics';
 
 const AdminApp = lazy(() => import('./admin/AdminApp'));
 
@@ -87,6 +91,20 @@ export default function App() {
   const isAdminRoute = location.pathname === adminPath || location.pathname.startsWith(`${adminPath}/`);
 
   useEffect(() => {
+    if (isAdminRoute) return;
+    trackPortfolioEvent('pageview');
+    const projectSlug = location.pathname.match(/^\/projects\/([a-z0-9-]+)$/)?.[1];
+    if (projectSlug) trackPortfolioEvent('project_view', projectSlug);
+  }, [isAdminRoute, location.pathname]);
+
+  useEffect(() => {
+    if (location.pathname !== '/' || !location.hash) return;
+    const id = decodeURIComponent(location.hash.slice(1));
+    const frame = window.requestAnimationFrame(() => setTimeout(() => scrollToSection(id), 0));
+    return () => window.cancelAnimationFrame(frame);
+  }, [location.hash, location.pathname]);
+
+  useEffect(() => {
     if (reducedMotion) {
       setSmoothScroller(null);
       return;
@@ -113,6 +131,7 @@ export default function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/projects/:slug" element={<ProjectCaseStudy />} />
         <Route path={adminPath} element={<Suspense fallback={null}><AdminApp /></Suspense>} />
         <Route path={`${adminPath}/*`} element={<Suspense fallback={null}><AdminApp /></Suspense>} />
         <Route path="*" element={<NotFound />} />
@@ -120,6 +139,8 @@ export default function App() {
       <Footer />
       <Loader progress={progress} visible={visible} />
       <TourWidgets />
+      <CommandPalette />
+      <PrivacyConsent />
     </TourProvider>
   </HeroProvider>;
 }

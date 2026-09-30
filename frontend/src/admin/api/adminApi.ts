@@ -29,6 +29,8 @@ export interface ProfileData {
     title?: string;
     description?: string;
   };
+  availability?: { status?: 'open' | 'limited' | 'closed'; message?: string };
+  currentlyLearning?: string[];
   accentColor?: string;
   avatarUrl?: string;
   resume?: { url?: string; publicId?: string };
@@ -47,6 +49,44 @@ export interface ProjectData {
   order?: number;
   images?: Array<{ url: string; publicId?: string }>;
   slug?: string;
+  role?: string;
+  duration?: string;
+  status?: 'completed' | 'in-progress' | 'planned';
+  problem?: string;
+  solution?: string;
+  features?: string[];
+  challenges?: string;
+}
+
+export interface CertificateData {
+  _id?: string;
+  title: string;
+  issuer?: string;
+  type?: 'certificate' | 'achievement' | 'award';
+  issueDate?: string;
+  credentialId?: string;
+  credentialUrl?: string;
+  image?: { url?: string; publicId?: string };
+  description?: string;
+  visible?: boolean;
+  order?: number;
+}
+
+export interface InsightsData {
+  range: number;
+  totals: {
+    views: number;
+    uniqueVisitors: number;
+    projectViews: number;
+    projectLinkClicks: number;
+    resumeDownloads: number;
+    socialClicks: number;
+    contactSubmits: number;
+  };
+  daily: Array<{ day: string; views: number; unique: number }>;
+  topProjects: Array<{ slug: string; title: string; views: number; linkClicks: number }>;
+  topReferrers: Array<{ host: string; count: number }>;
+  devices: { mobile: number; desktop: number };
 }
 
 export interface SkillData {
@@ -87,7 +127,7 @@ export interface ExperienceData {
 }
 
 export interface SectionData {
-  key: 'about' | 'skills' | 'projects' | 'education' | 'experience' | 'contact';
+  key: 'about' | 'skills' | 'projects' | 'certificates' | 'github' | 'education' | 'experience' | 'contact';
   title: string;
   visible: boolean;
   order: number;
@@ -268,6 +308,45 @@ export async function deleteProjectImage(projectId: string, publicId: string) {
 
 export async function reorderProjects(payload: Array<{ id: string; order: number }>) {
   const { data } = await apiClient.patch<ProjectData[]>('/api/admin/projects/reorder', payload);
+  return data;
+}
+
+export async function getCertificates() {
+  const { data } = await apiClient.get<CertificateData[]>('/api/admin/certificates');
+  return data;
+}
+
+export async function createCertificate(payload: Partial<CertificateData>) {
+  const { data } = await apiClient.post<CertificateData>('/api/admin/certificates', payload);
+  return data;
+}
+
+export async function updateCertificate(id: string, payload: Partial<CertificateData>) {
+  const { data } = await apiClient.put<CertificateData>(`/api/admin/certificates/${id}`, payload);
+  return data;
+}
+
+export async function deleteCertificate(id: string) {
+  const { data } = await apiClient.delete<{ message?: string }>(`/api/admin/certificates/${id}`);
+  return data;
+}
+
+export async function reorderCertificates(payload: Array<{ id: string; order: number }>) {
+  const { data } = await apiClient.patch<CertificateData[]>('/api/admin/certificates/reorder', payload);
+  return data;
+}
+
+export async function uploadCertificateImage(id: string, file: File) {
+  const formData = new FormData();
+  formData.append('image', file);
+  const { data } = await apiClient.post<CertificateData>(`/api/admin/certificates/${id}/image`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data;
+}
+
+export async function getInsights(range: 7 | 30 | 90) {
+  const { data } = await apiClient.get<InsightsData>('/api/admin/insights', { params: { range } });
   return data;
 }
 
