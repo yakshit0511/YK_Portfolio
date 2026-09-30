@@ -132,12 +132,6 @@ export const seedDatabase = async ({ force = process.argv.includes('--force') } 
       });
     }
 
-    const profileExists = await Profile.exists({});
-    if (profileExists && !force) {
-      console.log('Data already exists. Seed skipped. Use --force to overwrite.');
-      return;
-    }
-
     if (force && env.NODE_ENV === 'production' && process.env.CONFIRM_RESET !== 'RESET') {
       if (!stdin.isTTY) {
         throw new Error('Production reset requires CONFIRM_RESET=RESET or an interactive confirmation.');
