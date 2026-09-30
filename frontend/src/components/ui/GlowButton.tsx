@@ -1,13 +1,32 @@
 import { useRef, type ComponentProps, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 
-type GlowButtonProps = Omit<ComponentProps<typeof motion.a>, 'children'> & {
+type GlowButtonCommonProps = {
   children: ReactNode;
   variant?: 'primary' | 'outline';
 };
 
-export function GlowButton({ children, variant = 'primary', className = '', onPointerMove, onPointerLeave, ...props }: GlowButtonProps) {
+type GlowAnchorProps = Omit<ComponentProps<typeof motion.a>, 'children'> & GlowButtonCommonProps & { as?: 'a' };
+type GlowButtonElementProps = Omit<ComponentProps<typeof motion.button>, 'children'> & GlowButtonCommonProps & { as: 'button' };
+
+export function GlowButton(props: GlowAnchorProps | GlowButtonElementProps) {
   const buttonRef = useRef<HTMLAnchorElement>(null);
+
+  if (props.as === 'button') {
+    const { children, variant = 'primary', className = '', ...buttonProps } = props;
+    return (
+      <motion.button
+        className={`glow-button glow-button--${variant} ${className}`}
+        whileHover={window.matchMedia('(prefers-reduced-motion: reduce)').matches ? undefined : { y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        {...buttonProps}
+      >
+        {children}
+      </motion.button>
+    );
+  }
+
+  const { children, variant = 'primary', className = '', onPointerMove, onPointerLeave, ...propsForAnchor } = props;
 
   const moveMagnet = (event: React.PointerEvent<HTMLAnchorElement>) => {
     onPointerMove?.(event);
@@ -31,7 +50,7 @@ export function GlowButton({ children, variant = 'primary', className = '', onPo
       whileTap={{ scale: 0.98 }}
       onPointerMove={moveMagnet}
       onPointerLeave={resetMagnet}
-      {...props}
+      {...propsForAnchor}
     >
       {children}
     </motion.a>

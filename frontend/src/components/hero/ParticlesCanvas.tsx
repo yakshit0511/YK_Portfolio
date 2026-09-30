@@ -34,6 +34,7 @@ export default function ParticlesCanvas() {
   const lowPower = useLowPower();
   const [inView, setInView] = useState(false);
   const [tabVisible, setTabVisible] = useState(() => document.visibilityState === 'visible');
+  const [orbActive, setOrbActive] = useState(false);
 
   useEffect(() => {
     const hero = document.querySelector('.hero-section');
@@ -50,6 +51,12 @@ export default function ParticlesCanvas() {
   }, []);
 
   useEffect(() => {
+    const onOrbVisibility = (event: Event) => setOrbActive((event as CustomEvent<boolean>).detail);
+    window.addEventListener('skills-orb-visibility', onOrbVisibility);
+    return () => window.removeEventListener('skills-orb-visibility', onOrbVisibility);
+  }, []);
+
+  useEffect(() => {
     const updatePointer = (event: PointerEvent) => {
       const x = (event.clientX / window.innerWidth - 0.5) * 0.08;
       const y = (event.clientY / window.innerHeight - 0.5) * 0.06;
@@ -61,12 +68,12 @@ export default function ParticlesCanvas() {
   }, [isMobile, lowPower]);
 
   const count = isMobile || lowPower ? 100 : 300;
-  const active = inView && tabVisible;
+  const active = inView && tabVisible && !orbActive;
 
   return <div className="particles-canvas" aria-hidden="true">
     <Canvas dpr={[1, 1.5]} frameloop={active ? 'always' : 'demand'} camera={{ position: [0, 0, 10], fov: 46 }}>
       <ambientLight intensity={0.8} />
-      <ParticleField count={count} />
+      <ParticleField key={count} count={count} />
       {!isMobile && !lowPower && <FloatingIcons />}
     </Canvas>
   </div>;

@@ -42,6 +42,7 @@ export function HeroSequence() {
   const failedRef = useRef(failed);
   const currentRef = useRef(frameIndex);
   const timerRef = useRef<number | null>(null);
+  const requestFrameRef = useRef<(index: number) => void>(() => undefined);
   const deadlineRef = useRef(0);
   const remainingRef = useRef(0);
   const pendingIndexRef = useRef<number | null>(null);
@@ -69,7 +70,7 @@ export function HeroSequence() {
     timerRef.current = window.setTimeout(() => {
       timerRef.current = null;
       remainingRef.current = 0;
-      requestFrame(index + 1);
+      requestFrameRef.current(index + 1);
     }, remainingRef.current);
   }, [clearTimer, setSequenceDone, tabVisible]);
 
@@ -86,6 +87,8 @@ export function HeroSequence() {
     }
     showFrame(nextIndex);
   }, [setSequenceDone, showFrame]);
+
+  useEffect(() => { requestFrameRef.current = requestFrame; }, [requestFrame]);
 
   useEffect(() => {
     const nextStaticMode = reducedMotion || prefersStaticSequence();

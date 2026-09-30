@@ -30,7 +30,7 @@ Add supplied media under `public/` using the current filenames:
 - `images/cutouts/05_wave_10-12s (1).png`
 - `images/cutouts/06_point_down_12-15s (1).png`
 - `images/cutouts/07_final_pose (1).png`
-- `images/backgrounds/room-bg.jpg.png` (currently supplied) and `room-bg-mobile.jpg`
+- `images/backgrounds/room-bg.jpg.png` (used on desktop and mobile)
 - `images/brand/Logo.png` (used as the favicon)
 - `images/guide/` contains the supplied pointing illustrations for Prompt 4
 

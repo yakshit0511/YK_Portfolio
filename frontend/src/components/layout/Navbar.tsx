@@ -1,17 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Github, Instagram, Linkedin, Menu, X } from 'lucide-react';
+import { Compass, Github, Instagram, Linkedin, Menu, X } from 'lucide-react';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { scrollToSection } from '../../utils/smoothScroll';
+import { useActiveSection } from '../../hooks/useActiveSection';
+import { useTour } from '../guide/TourProvider';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 export function Navbar() {
   const { data } = usePortfolio();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState('');
   const drawerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const sections = [...data.sections].filter((section) => section.visible).sort((a, b) => a.order - b.order);
+  const { start } = useTour();
+  const reducedMotion = useReducedMotion();
+  const sections = [...data.sections].filter((section) => section.visible && !(section.key === 'experience' && data.experience.length === 0)).sort((a, b) => a.order - b.order);
+  const active = useActiveSection(sections.map((section) => section.key));
   const socials = [
     { href: data.profile?.socials.github, label: 'GitHub', Icon: Github },
     { href: data.profile?.socials.linkedin, label: 'LinkedIn', Icon: Linkedin },
@@ -24,17 +29,6 @@ export function Navbar() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
-  useEffect(() => {
-    const targets = data.sections.filter((section) => section.visible).map(({ key }) => document.getElementById(key)).filter((item): item is HTMLElement => Boolean(item));
-    if (!targets.length) return;
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (visible) setActive(visible.target.id);
-    }, { rootMargin: '-20% 0px -65% 0px', threshold: [0, 0.2, 0.5] });
-    targets.forEach((target) => observer.observe(target));
-    return () => observer.disconnect();
-  }, [data.sections]);
 
   useEffect(() => {
     if (!open) return;
@@ -77,13 +71,15 @@ export function Navbar() {
           <div className="nav-socials">
             {socials.map(({ href, label, Icon }) => <a key={label} href={href} aria-label={label} target="_blank" rel="noopener noreferrer"><Icon size={17} /></a>)}
           </div>
+          <button className="nav-tour-button" type="button" onClick={start}><Compass size={16} />Tour</button>
           <button ref={triggerRef} className="menu-toggle" type="button" aria-label={open ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button>
         </div>
       </nav>
       <AnimatePresence>
-        {open && <motion.div id="mobile-navigation" ref={drawerRef} className="mobile-drawer" initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ duration: 0.28, ease: 'easeOut' }}>
+        {open && <motion.div id="mobile-navigation" ref={drawerRef} className="mobile-drawer" initial={reducedMotion ? false : { x: '100%' }} animate={{ x: 0 }} exit={reducedMotion ? undefined : { x: '100%' }} transition={{ duration: reducedMotion ? 0 : 0.28, ease: 'easeOut' }}>
           <p className="drawer-label">Navigate</p>
           {sections.map((section) => <a key={section.key} className={active === section.key ? 'is-active' : ''} href={`#${section.key}`} onClick={(event) => { event.preventDefault(); navigate(section.key); }}>{section.title}</a>)}
+          <button className="nav-tour-button" type="button" onClick={() => { setOpen(false); start(); }}><Compass size={17} />Take a quick tour</button>
           {data.profile?.resume?.url && <a className="resume-link" href={data.profile.resume.url} target="_blank" rel="noopener noreferrer">Resume</a>}
           <div className="drawer-socials">{socials.map(({ href, label, Icon }) => <a key={label} href={href} aria-label={label} target="_blank" rel="noopener noreferrer"><Icon size={18} /></a>)}</div>
         </motion.div>}

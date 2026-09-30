@@ -244,3 +244,74 @@ GET http://localhost:5000/api/public/portfolio
 
 ### Health check
 GET http://localhost:5000/api/health
+
+### Public: contact inquiry (set startedAt at least 3 seconds before sending)
+POST http://localhost:5000/api/public/contact
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "name": "Portfolio visitor",
+  "email": "visitor@example.com",
+  "subject": "Project inquiry",
+  "message": "I would like to discuss a portfolio project.",
+  "website": "",
+  "startedAt": 1000
+}
+
+### Public: contact validation errors
+POST http://localhost:5000/api/public/contact
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "name": "A",
+  "email": "not-an-email",
+  "message": "Short"
+}
+
+### Public: reject unknown contact fields
+POST http://localhost:5000/api/public/contact
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "name": "Portfolio visitor",
+  "email": "visitor@example.com",
+  "message": "This message passes the minimum length.",
+  "extra": true
+}
+
+### Public: contact honeypot (returns success without saving)
+POST http://localhost:5000/api/public/contact
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "name": "Spam bot",
+  "email": "bot@example.com",
+  "message": "This message is long enough for validation.",
+  "website": "filled-by-a-bot",
+  "startedAt": 1000
+}
+
+### Public: contact rate limit (send this request 6 times quickly; the 6th gets 429)
+POST http://localhost:5000/api/public/contact
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "name": "Rate limit test",
+  "email": "rate-test@example.com",
+  "message": "This request is for verifying contact rate limits.",
+  "website": "",
+  "startedAt": 1000
+}
+
+### Admin: retry failed inquiry email
+POST http://localhost:5000/api/admin/inquiries/64f8c70f7f37d5952dca8888/resend-email
+Origin: http://localhost:5173
+
+### Admin: list inquiries with failed notification emails
+GET http://localhost:5000/api/admin/inquiries?page=1&limit=10&emailFailed=true
+Origin: http://localhost:5173

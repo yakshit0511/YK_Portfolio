@@ -1,6 +1,21 @@
 import { Helmet } from 'react-helmet-async';
 import { usePortfolio } from '../context/PortfolioContext';
 import { Hero } from '../components/hero/Hero';
+import { About } from '../components/sections/About';
+import { Skills } from '../components/sections/Skills';
+import { Projects } from '../components/sections/Projects';
+import { Education } from '../components/sections/Education';
+import { Experience } from '../components/sections/Experience';
+import { Contact } from '../components/sections/Contact';
+
+const sectionElements = {
+  about: <About />,
+  skills: <Skills />,
+  projects: <Projects />,
+  education: <Education />,
+  experience: <Experience />,
+  contact: <Contact />,
+};
 
 export function Home() {
   const { data } = usePortfolio();
@@ -20,6 +35,12 @@ export function Home() {
       <meta name="twitter:image" content="/images/backgrounds/room-bg.jpg.png" />
       <meta name="robots" content="index, follow" />
     </Helmet>
-    <main id="top"><Hero /></main>
+    <main id="top">
+      <Hero />
+      {[...data.sections].sort((a, b) => a.order - b.order).map((section) => {
+        if (!section.visible || (section.key === 'experience' && data.experience.length === 0)) return null;
+        return <div key={section.key}>{sectionElements[section.key]}</div>;
+      })}
+    </main>
   </>;
 }

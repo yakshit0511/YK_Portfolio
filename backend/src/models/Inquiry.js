@@ -31,6 +31,13 @@ const inquirySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    emailError: {
+      type: String,
+      maxlength: 300,
+    },
+    emailedAt: {
+      type: Date,
+    },
     ip: {
       type: String,
     },

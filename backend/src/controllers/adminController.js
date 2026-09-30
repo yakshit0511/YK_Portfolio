@@ -6,6 +6,7 @@ import Project from '../models/Project.js';
 import SectionSetting from '../models/SectionSetting.js';
 import Skill from '../models/Skill.js';
 import { deleteAsset, extractPublicIdFromUrl, uploadBuffer } from '../utils/cloudinaryUpload.js';
+import { sendInquiryNotification } from '../utils/mailer.js';
 
 const allowedProfileFields = [
   'fullName',
@@ -804,7 +805,10 @@ export const getInquiries = async (req, res) => {
     const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 10));
     const skip = (page - 1) * limit;
     const status = req.query.status;
-    const filter = status ? { status } : {};
+    const filter = {
+      ...(status ? { status } : {}),
+      ...(req.query.emailFailed === 'true' ? { emailSent: false } : {}),
+    };
 
     const [items, total] = await Promise.all([
       Inquiry.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
@@ -817,6 +821,36 @@ export const getInquiries = async (req, res) => {
       total,
       totalPages: Math.ceil(total / limit),
       items,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message,
+    });
+  }
+};
+
+export const resendInquiryEmail = async (req, res) => {
+  try {
+    const inquiry = await Inquiry.findById(req.params.id);
+
+    if (!inquiry) return res.status(404).json({ message: 'Inquiry not found.' });
+    if (inquiry.emailSent) return res.status(200).json({ emailSent: true, emailError: null });
+
+    const result = await sendInquiryNotification(inquiry);
+    if (result.ok) {
+      inquiry.emailSent = true;
+      inquiry.emailedAt = new Date();
+      inquiry.emailError = undefined;
+    } else {
+      inquiry.emailSent = false;
+      inquiry.emailError = String(result.error || 'Email delivery failed.').slice(0, 300);
+      console.error('Admin inquiry email retry failed.');
+    }
+
+    await inquiry.save();
+    return res.status(200).json({
+      emailSent: inquiry.emailSent,
+      emailError: inquiry.emailError || null,
     });
   } catch (error) {
     return res.status(500).json({
@@ -890,11 +924,12 @@ export const deleteInquiry = async (req, res) => {
 
 export const getDashboardStats = async (req, res) => {
   try {
-    const [projects, skills, unreadInquiries, totalInquiries, recentInquiries] = await Promise.all([
+    const [projects, skills, unreadInquiries, totalInquiries, failedEmails, recentInquiries] = await Promise.all([
       Project.countDocuments(),
       Skill.countDocuments(),
       Inquiry.countDocuments({ status: 'new' }),
       Inquiry.countDocuments(),
+      Inquiry.countDocuments({ emailSent: false }),
       Inquiry.find().sort({ createdAt: -1 }).limit(5).lean(),
     ]);
 
@@ -903,6 +938,7 @@ export const getDashboardStats = async (req, res) => {
       skills,
       unreadInquiries,
       totalInquiries,
+      failedEmails,
       recentInquiries,
     });
   } catch (error) {

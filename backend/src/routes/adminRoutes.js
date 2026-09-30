@@ -26,6 +26,7 @@ import {
   reorderExperience,
   reorderProjects,
   reorderSkills,
+  resendInquiryEmail,
   updateEducation,
   updateExperience,
   updateInquiryStatus,
@@ -144,6 +145,7 @@ router.get('/sections', getSections);
 router.put('/sections', updateSections);
 
 router.get('/inquiries', getInquiries);
+router.post('/inquiries/:id/resend-email', [param('id').isMongoId().withMessage('Invalid inquiry ID.')], validate, resendInquiryEmail);
 router.get('/inquiries/:id', [param('id').isMongoId().withMessage('Invalid inquiry ID.')], validate, getInquiryById);
 router.patch('/inquiries/:id/status', [param('id').isMongoId().withMessage('Invalid inquiry ID.')], updateInquiryStatus);
 router.delete('/inquiries/:id', [param('id').isMongoId().withMessage('Invalid inquiry ID.')], validate, deleteInquiry);

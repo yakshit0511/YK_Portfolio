@@ -33,8 +33,13 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
               seo: { ...fallbackData.profile!.seo, ...result.profile.seo },
             }
           : fallbackData.profile;
-        if (safeProfile) delete (safeProfile as typeof safeProfile & { phone?: string }).phone;
-        setData({ ...fallbackData, ...result, profile: safeProfile });
+        setData({
+          ...fallbackData,
+          ...result,
+          skills: result.skills?.length ? result.skills : fallbackData.skills,
+          education: result.education?.length ? result.education : fallbackData.education,
+          profile: safeProfile,
+        });
       })
       .catch((reason: unknown) => {
         if (!active) return;

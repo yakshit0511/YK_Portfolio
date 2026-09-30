@@ -13,6 +13,10 @@ import authRoutes from './routes/authRoutes.js';
 import publicRoutes from './routes/publicRoutes.js';
 
 const app = express();
+const clientOrigins = new Set([
+  env.CLIENT_URL.replace(/\/$/, ''),
+  ...(env.NODE_ENV === 'production' ? [] : ['http://localhost:5173', 'http://localhost:5174']),
+]);
 
 // If third-party cookies cause problems in Safari, the fix is to proxy /api through the Vercel domain using a Vercel rewrite so the cookie becomes first-party.
 app.set('trust proxy', 1);
@@ -20,11 +24,14 @@ app.set('trust proxy', 1);
 app.use(helmet());
 app.use(
   cors({
-    origin: env.CLIENT_URL,
+    origin: [...clientOrigins],
     credentials: true,
   })
 );
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({
+  limit: '1mb',
+  type: (req) => req.path !== '/api/public/contact' && req.is('application/json'),
+}));
 app.use(mongoSanitize());
 app.use(cookieParser());
 
@@ -60,7 +67,7 @@ app.use((req, res) => {
 });
 
 app.use((error, req, res, next) => {
-  let statusCode = error.statusCode || 500;
+  let statusCode = error.statusCode || error.status || 500;
 
   if (error?.name === 'MulterError' || /Only .* are allowed|required\./.test(error?.message || '')) {
     statusCode = 400;

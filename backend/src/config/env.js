@@ -35,8 +35,9 @@ export const env = {
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || '',
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || '',
   RESEND_API_KEY: process.env.RESEND_API_KEY || '',
-  RESEND_FROM: process.env.RESEND_FROM || 'onboarding@resend.dev',
+  RESEND_FROM: process.env.RESEND_FROM || '',
   INQUIRY_TO_EMAIL: process.env.INQUIRY_TO_EMAIL || process.env.ADMIN_EMAIL,
+  AUTO_REPLY_ENABLED: process.env.AUTO_REPLY_ENABLED || 'false',
 };
 
 export default env;

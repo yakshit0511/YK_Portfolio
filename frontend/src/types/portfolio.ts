@@ -10,6 +10,7 @@ export interface Profile {
   typingTitles: string[];
   about: string;
   email?: string;
+  phone?: string;
   location?: string;
   avatarUrl?: string;
   resume?: { url?: string; publicId?: string };
@@ -21,6 +22,7 @@ export interface Profile {
 export interface Skill {
   name: string;
   category: string;
+  visible?: boolean;
   level?: number;
   icon?: string;
   order?: number;

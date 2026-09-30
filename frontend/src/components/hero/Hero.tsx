@@ -5,6 +5,7 @@ import { usePortfolio } from '../../context/PortfolioContext';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { scrollToSection } from '../../utils/smoothScroll';
 import { GlowButton } from '../ui/GlowButton';
+import { GlowRing } from '../ui/GlowRing';
 import { HeroSequence } from './HeroSequence';
 import { TypingText } from './TypingText';
 
@@ -45,7 +46,7 @@ export function Hero() {
           </motion.div>
           <motion.p className="hero-intro" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}>{intro}</motion.p>
           <motion.div className="hero-actions" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.46 }}>
-            <GlowButton href="#projects" onClick={(event) => { event.preventDefault(); scrollToSection('projects'); }}>View Projects <ArrowDownRight size={17} /></GlowButton>
+            <GlowButton href="#projects" onClick={(event) => { event.preventDefault(); scrollToSection('projects'); }}><GlowRing size={24} />View Projects <ArrowDownRight size={17} /></GlowButton>
             <GlowButton variant="outline" href="#contact" onClick={(event) => { event.preventDefault(); scrollToSection('contact'); }}>Contact Me</GlowButton>
           </motion.div>
           <motion.div className="hero-socials" aria-label="Social profiles" initial={reducedMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}>

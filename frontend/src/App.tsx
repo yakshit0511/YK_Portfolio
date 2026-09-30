@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Lenis from 'lenis';
 import { Navbar } from './components/layout/Navbar';
@@ -10,7 +10,27 @@ import { AdminPlaceholder } from './pages/AdminPlaceholder';
 import { NotFound } from './pages/NotFound';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { setSmoothScroller } from './utils/smoothScroll';
-import { HeroProvider } from './context/HeroContext';
+import { HeroProvider, useHeroContext } from './context/HeroContext';
+import { TourProvider, useTour } from './components/guide/TourProvider';
+
+const TourOverlay = lazy(() => import('./components/guide/TourOverlay').then((module) => ({ default: module.TourOverlay })));
+const TourInvite = lazy(() => import('./components/guide/TourInvite').then((module) => ({ default: module.TourInvite })));
+
+function TourWidgets() {
+  const { active } = useTour();
+  const { sequenceDone } = useHeroContext();
+  const [inviteDelayReached, setInviteDelayReached] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setInviteDelayReached(true), 8000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  return <>
+    {(sequenceDone || inviteDelayReached) && <Suspense fallback={null}><TourInvite /></Suspense>}
+    {active && <Suspense fallback={null}><TourOverlay /></Suspense>}
+  </>;
+}
 
 const adminPath = (import.meta.env.VITE_ADMIN_PATH || '/yakshit-portfolio_5518').startsWith('/')
   ? (import.meta.env.VITE_ADMIN_PATH || '/yakshit-portfolio_5518')
@@ -78,14 +98,17 @@ export default function App() {
   }, [reducedMotion]);
 
   return <HeroProvider>
-    <BackgroundScene />
-    <Navbar />
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path={adminPath} element={<AdminPlaceholder />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-    <Footer />
-    <Loader progress={progress} visible={visible} />
+    <TourProvider>
+      <BackgroundScene />
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path={adminPath} element={<AdminPlaceholder />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Footer />
+      <Loader progress={progress} visible={visible} />
+      <TourWidgets />
+    </TourProvider>
   </HeroProvider>;
 }

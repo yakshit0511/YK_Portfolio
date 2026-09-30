@@ -4,6 +4,16 @@ import Profile from '../models/Profile.js';
 import Project from '../models/Project.js';
 import SectionSetting from '../models/SectionSetting.js';
 import Skill from '../models/Skill.js';
+import { env } from '../config/env.js';
+
+const defaultSections = [
+  { key: 'about', title: 'About', visible: true, order: 0 },
+  { key: 'skills', title: 'Skills', visible: true, order: 1 },
+  { key: 'projects', title: 'Projects', visible: true, order: 2 },
+  { key: 'education', title: 'Education', visible: true, order: 3 },
+  { key: 'experience', title: 'Experience', visible: true, order: 4 },
+  { key: 'contact', title: 'Contact', visible: true, order: 5 },
+];
 
 const stripSensitiveFields = (item) => {
   if (!item) {
@@ -22,27 +32,33 @@ export const getPortfolio = async (req, res) => {
   try {
     const [profile, sections, skills, projects, education, experience] = await Promise.all([
       Profile.findOne().lean(),
-      SectionSetting.find({ visible: true }).sort({ order: 1, key: 1 }).lean(),
+      SectionSetting.find().sort({ order: 1, key: 1 }).lean(),
       Skill.find({ visible: true }).sort({ category: 1, order: 1, name: 1 }).lean(),
       Project.find({ visible: true }).sort({ featured: -1, order: 1, createdAt: -1 }).lean(),
       Education.find({ visible: true }).sort({ order: 1, endYear: -1 }).lean(),
       Experience.find({ visible: true }).sort({ order: 1, startDate: -1 }).lean(),
     ]);
 
-    const publicProfile = profile ? { ...profile } : null;
+    const publicProfile = profile
+      ? { ...profile, email: profile.email || env.INQUIRY_TO_EMAIL }
+      : { email: env.INQUIRY_TO_EMAIL };
 
     if (publicProfile) {
       if (!publicProfile.showPhone) {
         delete publicProfile.phone;
       }
 
+      delete publicProfile.showPhone;
       delete publicProfile._id;
       delete publicProfile.__v;
       delete publicProfile.createdAt;
       delete publicProfile.updatedAt;
     }
 
-    const publicSections = sections.map((section) => stripSensitiveFields(section));
+    const visibleSections = sections.length
+      ? sections.filter((section) => section.visible)
+      : defaultSections;
+    const publicSections = visibleSections.map((section) => stripSensitiveFields(section));
 
     const groupedSkills = [];
     const skillMap = new Map();
