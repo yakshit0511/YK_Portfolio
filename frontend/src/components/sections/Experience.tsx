@@ -10,7 +10,7 @@ export function Experience() {
 
   return <section id="experience" className="portfolio-section experience-section" aria-labelledby="experience-heading">
     <div className="container">
-      <SectionHeading label="05 / EXPERIENCE" title="Where I’ve contributed" />
+      <SectionHeading label="07 / EXPERIENCE" title="Where I’ve contributed" />
       <div className="experience-layout">
         <Timeline items={items.map((item) => ({
           title: item.role,

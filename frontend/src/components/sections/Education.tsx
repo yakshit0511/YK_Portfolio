@@ -18,7 +18,7 @@ export function Education() {
 
   return <section id="education" className="portfolio-section education-section" aria-labelledby="education-heading">
     <div className="container">
-      <SectionHeading label="04 / EDUCATION" title="Learning by doing" />
+      <SectionHeading label="06 / EDUCATION" title="Learning by doing" />
       <div className="education-layout">
         <Timeline items={items.map((item) => ({
           title: item.institution,

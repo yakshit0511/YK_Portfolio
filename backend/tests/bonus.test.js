@@ -3,12 +3,54 @@ import request from 'supertest';
 import app from '../src/app.js';
 import Certificate from '../src/models/Certificate.js';
 import Event from '../src/models/Event.js';
-import Certificate from '../src/models/Certificate.js';
 import Profile from '../src/models/Profile.js';
 import Project from '../src/models/Project.js';
 import { addClientHeaders, createAdmin, freshIp, loginAdmin, testOrigin } from './helpers.js';
+import { importInitialCertificates } from '../scripts/import-initial-certificates.js';
+import { importInitialProjects } from '../scripts/import-initial-projects.js';
 
 describe('bonus portfolio APIs', () => {
+  it('imports the four supplied certificates once without overwriting existing details', async () => {
+    await Certificate.create({
+      title: 'Full Stack Development Internship',
+      issuer: 'TechnoHacks EduTech',
+      credentialId: 'TH09595',
+      description: 'Admin-edited certificate description',
+      order: 0,
+    });
+
+    const firstImport = await importInitialCertificates();
+    const secondImport = await importInitialCertificates();
+
+    expect(firstImport.created).toHaveLength(3);
+    expect(firstImport.skipped).toEqual(['Full Stack Development Internship']);
+    expect(secondImport.created).toHaveLength(0);
+    expect(secondImport.skipped).toHaveLength(4);
+    expect(await Certificate.countDocuments()).toBe(4);
+    expect((await Certificate.findOne({ credentialId: 'TH09595' })).description).toBe('Admin-edited certificate description');
+    expect((await Certificate.findOne({ credentialId: 'NPTEL25CS23S434600237' })).description).toContain('top 5%');
+  });
+
+  it('imports the four starter projects once without overwriting existing project content', async () => {
+    await Project.create({
+      title: 'Aaditya Builders - Real Estate Business Platform',
+      slug: 'aaditya-builders',
+      description: 'Admin-edited description',
+      order: 2,
+    });
+
+    const firstImport = await importInitialProjects();
+    const secondImport = await importInitialProjects();
+
+    expect(firstImport.created).toHaveLength(3);
+    expect(firstImport.skipped).toEqual(['Aaditya Builders - Real Estate Business Platform']);
+    expect(secondImport.created).toHaveLength(0);
+    expect(secondImport.skipped).toHaveLength(4);
+    expect(await Project.countDocuments()).toBe(4);
+    expect((await Project.findOne({ slug: 'aaditya-builders' })).description).toBe('Admin-edited description');
+    expect((await Project.findOne({ slug: 'campus-connect' })).liveUrl).toBe('https://campus-connect-ten-blond.vercel.app/');
+  });
+
   it('returns visible credentials and omits hidden credentials from the public portfolio', async () => {
     await Certificate.create([
       { title: 'Public award', visible: true, credentialId: 'public-id' },

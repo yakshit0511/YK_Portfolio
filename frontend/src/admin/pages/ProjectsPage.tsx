@@ -103,7 +103,8 @@ export function ProjectsPage() {
           <ProjectForm
             mode={selectedProjectId === '__new__' ? 'create' : 'edit'}
             projectId={selectedProjectId === '__new__' ? undefined : selectedProjectId}
-            onSaved={() => { setSelectedProjectId(null); void loadProjects(); }}
+            onSaved={() => { void loadProjects(); }}
+            onCreated={(projectId) => setSelectedProjectId(projectId)}
             onCancel={() => setSelectedProjectId(null)}
           />
         </div>

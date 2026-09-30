@@ -41,7 +41,7 @@ export function ProjectCaseStudy() {
       <p className="case-study-lede">{description}</p>
       <div className="case-study-facts">
         {project.role && <span><b>Role</b>{project.role}</span>}
-        {project.duration && <span><b>Duration</b>{project.duration}</span>}
+        {project.duration && <span><b>Timeline</b>{project.duration}</span>}
       </div>
       <div className="case-study-actions">
         {project.liveUrl && <a className="glow-button glow-button--primary" href={project.liveUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={16} /> Live project</a>}
@@ -56,6 +56,15 @@ export function ProjectCaseStudy() {
       {project.challenges ? <section><p className="eyebrow">04 / ENGINEERING</p><h2>Challenges & decisions</h2><p>{project.challenges}</p></section> : null}
       {project.techStack?.length ? <section><p className="eyebrow">TOOLS / STACK</p><div className="chip-row">{project.techStack.map((tech) => <span className="skill-chip" key={tech}>{tech}</span>)}</div></section> : null}
     </div>
+    {project.images && project.images.length > 1 && <section className="case-study-gallery" aria-labelledby="case-study-gallery-heading">
+      <p className="eyebrow">PROJECT / GALLERY</p>
+      <h2 id="case-study-gallery-heading">More from {title}</h2>
+      <div className="case-study-gallery-grid">
+        {project.images.slice(1).map((image, index) => <figure key={`${image.publicId || image.url}-${index}`}>
+          <img src={cloudinaryImageUrl(image.url, 800)} alt={`${title} gallery photo ${index + 2}`} loading="lazy" width={800} height={450} />
+        </figure>)}
+      </div>
+    </section>}
     <nav className="case-study-pagination" aria-label="Other case studies">
       {previous ? <Link to={`/projects/${previous.slug}`}><ArrowLeft size={16} /><span><small>Previous</small>{previous.title}</span></Link> : <span />}
       {next ? <Link to={`/projects/${next.slug}`}><span><small>Next</small>{next.title}</span><ArrowRight size={16} /></Link> : <span />}

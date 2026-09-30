@@ -34,6 +34,12 @@ Public endpoints include `GET /api/public/projects/:slug`, `GET /api/public/gith
 
 Protected admin endpoints include certificate CRUD at `/api/admin/certificates` and aggregated analytics at `/api/admin/insights?range=7|30|90`. The profile and project editors manage availability, learning topics, and case-study fields.
 
+To add the four supplied portfolio projects without changing existing projects, run `npm run projects:import`. It skips entries whose slug or title already exists, and can be safely rerun.
+
+To attach the supplied website screenshots as each project's first gallery image, run `npm run projects:attach-covers` after importing the projects. The script uploads optimized WebP covers to Cloudinary and safely skips covers already attached.
+
+To add the four supplied certificates without changing existing entries, run `npm run certificates:import`. The importer matches existing credential IDs or issuer/title pairs and is safe to rerun. Original certificate images can be uploaded or replaced later from Admin > Certificates.
+
 Before deploying existing data with the bonus features, run the additive migration once:
 
 ```bash
