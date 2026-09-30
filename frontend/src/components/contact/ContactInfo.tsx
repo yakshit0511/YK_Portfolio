@@ -1,8 +1,8 @@
-import { Check, Copy, Download, Github, Instagram, Linkedin, Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
+import { Check, Copy, Github, Instagram, Linkedin, Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
-import { GlowButton } from '../ui/GlowButton';
 import { GlassCard } from '../ui/GlassCard';
+import { Picture } from '../ui/Picture';
 
 export function ContactInfo() {
   const { data } = usePortfolio();
@@ -20,7 +20,7 @@ export function ContactInfo() {
   return <div className="contact-info">
     <figure className="contact-character" aria-hidden="true">
       <span />
-      <img src="/images/cutouts/05_wave_10-12s%20(1).png" alt="" />
+      <Picture src="/images/cutouts/05_wave_10-12s%20(1).png" alt="" width={420} height={480} />
     </figure>
     <div className="contact-info-cards">
       {profile?.email && <GlassCard className="contact-info-card" tabIndex={0}>
@@ -47,7 +47,6 @@ export function ContactInfo() {
         <Icon size={18} />
       </a>)}
     </nav>}
-    {profile?.resume?.url && <GlowButton className="contact-resume" href={profile.resume.url} target="_blank" rel="noopener noreferrer"><Download size={16} />Download Resume</GlowButton>}
     <p className="contact-availability"><i aria-hidden="true" />Open to internships and full-time roles</p>
   </div>;
 }

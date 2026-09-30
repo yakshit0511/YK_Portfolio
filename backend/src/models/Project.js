@@ -53,6 +53,8 @@ const projectSchema = new mongoose.Schema(
   }
 );
 
+projectSchema.index({ visible: 1, featured: -1, order: 1 });
+
 const Project = mongoose.model('Project', projectSchema);
 
 export default Project;

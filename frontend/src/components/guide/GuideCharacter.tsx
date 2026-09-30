@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { Picture } from '../ui/Picture';
 
 interface GuideCharacterProps {
   src: string;
@@ -24,6 +25,6 @@ export function GuideCharacter({ src, side = 'right', flip = false, alt = '', cl
     aria-hidden={alt ? undefined : true}
   >
     <span className="guide-character-glow" aria-hidden="true" />
-    <img src={src} alt={alt} aria-hidden={alt ? undefined : true} loading="lazy" width="420" height="480" style={{ transform: flip ? 'scaleX(-1)' : undefined }} onError={() => setAvailable(false)} />
+    <Picture src={src} alt={alt} aria-hidden={alt ? undefined : true} loading="lazy" width={420} height={480} style={{ transform: flip ? 'scaleX(-1)' : undefined }} onError={() => setAvailable(false)} />
   </motion.figure>;
 }

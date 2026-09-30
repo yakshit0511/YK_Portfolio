@@ -32,7 +32,7 @@ const getCookieOptions = () => {
   return {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
+    sameSite: env.COOKIE_SAMESITE,
     maxAge: getExpiresInMs(),
     path: '/',
   };
@@ -112,7 +112,7 @@ export const login = async (req, res) => {
 export const logout = (req, res) => {
   res.clearCookie('admin_token', {
     httpOnly: true,
-    sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax',
+    sameSite: env.COOKIE_SAMESITE,
     secure: env.NODE_ENV === 'production',
     path: '/',
   });

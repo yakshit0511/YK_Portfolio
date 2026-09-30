@@ -47,6 +47,10 @@ const inquirySchema = new mongoose.Schema(
   }
 );
 
+inquirySchema.index({ createdAt: -1 });
+inquirySchema.index({ status: 1, createdAt: -1 });
+inquirySchema.index({ email: 1, createdAt: -1 });
+
 const Inquiry = mongoose.model('Inquiry', inquirySchema);
 
 export default Inquiry;

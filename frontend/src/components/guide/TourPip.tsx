@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 import { guideImagePaths, type TourStep } from '../../data/tourSteps';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { getOptimizedImageSrc } from '../../utils/imageSources';
 
 interface TourPipProps {
   step: TourStep;
@@ -38,7 +39,7 @@ export function TourPip({ step, stepIndex, stepCount, targetRect, onBack, onNext
   useEffect(() => {
     for (const path of guideImagePaths.slice(1)) {
       const image = new Image();
-      image.src = path;
+      image.src = getOptimizedImageSrc(path) ?? path;
     }
   }, []);
 
@@ -47,7 +48,7 @@ export function TourPip({ step, stepIndex, stepCount, targetRect, onBack, onNext
 
   return <motion.aside ref={pipRef} tabIndex={-1} className="tour-pip glass" style={pipPosition(targetRect)} role="dialog" aria-label="Site tour" initial={reducedMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={reducedMotion ? undefined : { opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.25 }}>
     <button className="tour-close icon-button" type="button" onClick={onStop} aria-label="Close site tour"><X size={16} /></button>
-    {!failed && <div className="tour-pip-image"><AnimatePresence mode="wait" initial={false}><motion.img key={imagePath} src={imagePath} alt="" aria-hidden="true" width="300" height="170" loading="lazy" onError={() => setFailed(true)} initial={reducedMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.3 }} /></AnimatePresence></div>}
+    {!failed && <div className="tour-pip-image"><AnimatePresence mode="wait" initial={false}><picture key={imagePath}><source srcSet={getOptimizedImageSrc(imagePath)} type="image/webp" /><motion.img src={imagePath} alt="" aria-hidden="true" width={300} height={170} loading="lazy" onError={() => setFailed(true)} initial={reducedMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.3} } /></picture></AnimatePresence></div>}
     <div className="tour-pip-copy" aria-live="polite"><span className="eyebrow">TOUR {String(stepIndex + 1).padStart(2, '0')} / {String(stepCount).padStart(2, '0')}</span><h2>{step.title}</h2><p>{step.text}</p></div>
     <div className="tour-controls">
       <button type="button" className="tour-text-button" onClick={onStop}>Skip</button>

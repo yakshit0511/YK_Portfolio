@@ -1,15 +1,11 @@
 import { env } from '../config/env.js';
 
-const isAllowedOrigin = (value) => {
-  if (!value) {
-    return false;
-  }
-
+const getOrigin = (value) => {
+  if (!value) return null;
   try {
-    const parsed = new URL(value);
-    return parsed.origin === env.CLIENT_URL.replace(/\/$/, '');
-  } catch (error) {
-    return false;
+    return new URL(value).origin;
+  } catch {
+    return null;
   }
 };
 
@@ -20,9 +16,9 @@ export const originCheck = (req, res, next) => {
 
   const originHeader = req.get('Origin');
   const refererHeader = req.get('Referer');
-  const allowedOrigin = originHeader || refererHeader;
+  const requestOrigin = originHeader ? getOrigin(originHeader) : getOrigin(refererHeader);
 
-  if (!allowedOrigin || !isAllowedOrigin(allowedOrigin)) {
+  if (!requestOrigin || !env.CLIENT_URLS.includes(requestOrigin)) {
     return res.status(403).json({ message: 'Forbidden' });
   }
 

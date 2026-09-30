@@ -6,6 +6,7 @@ import { scrollToSection } from '../../utils/smoothScroll';
 import { useActiveSection } from '../../hooks/useActiveSection';
 import { useTour } from '../guide/TourProvider';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { getResumeDeliveryUrl } from '../../utils/resumeUrl';
 
 export function Navbar() {
   const { data } = usePortfolio();
@@ -17,6 +18,8 @@ export function Navbar() {
   const reducedMotion = useReducedMotion();
   const sections = [...data.sections].filter((section) => section.visible && !(section.key === 'experience' && data.experience.length === 0)).sort((a, b) => a.order - b.order);
   const active = useActiveSection(sections.map((section) => section.key));
+  const resumeUrl = data.profile?.resume?.url;
+  const resumePreviewUrl = resumeUrl ? getResumeDeliveryUrl(resumeUrl) : undefined;
   const socials = [
     { href: data.profile?.socials.github, label: 'GitHub', Icon: Github },
     { href: data.profile?.socials.linkedin, label: 'LinkedIn', Icon: Linkedin },
@@ -59,7 +62,7 @@ export function Navbar() {
     <header className={`site-header${scrolled ? ' site-header--scrolled' : ''}`}>
       <nav className="navbar container" aria-label="Main navigation">
         <a className="brand" href="#top" onClick={(event) => { event.preventDefault(); navigate('top'); }}>
-          <img className="brand-logo" src="/images/brand/Logo.png" alt="" /><span>{data.profile?.siteName ?? 'Yakshit Portfolio'}</span>
+          <img className="brand-logo" src="/images/brand/Logo.png" alt="" width={42} height={38} /><span>{data.profile?.siteName ?? 'Yakshit Portfolio'}</span>
         </a>
         <div className="nav-links" aria-label="Portfolio sections">
           {sections.map((section) => (
@@ -67,7 +70,7 @@ export function Navbar() {
           ))}
         </div>
         <div className="nav-actions">
-          {data.profile?.resume?.url && <a className="resume-link" href={data.profile.resume.url} target="_blank" rel="noopener noreferrer">Resume</a>}
+          {resumePreviewUrl && <a className="resume-link" href={resumePreviewUrl} target="_blank" rel="noopener noreferrer">Resume</a>}
           <div className="nav-socials">
             {socials.map(({ href, label, Icon }) => <a key={label} href={href} aria-label={label} target="_blank" rel="noopener noreferrer"><Icon size={17} /></a>)}
           </div>
@@ -80,7 +83,7 @@ export function Navbar() {
           <p className="drawer-label">Navigate</p>
           {sections.map((section) => <a key={section.key} className={active === section.key ? 'is-active' : ''} href={`#${section.key}`} onClick={(event) => { event.preventDefault(); navigate(section.key); }}>{section.title}</a>)}
           <button className="nav-tour-button" type="button" onClick={() => { setOpen(false); start(); }}><Compass size={17} />Take a quick tour</button>
-          {data.profile?.resume?.url && <a className="resume-link" href={data.profile.resume.url} target="_blank" rel="noopener noreferrer">Resume</a>}
+          {resumePreviewUrl && <a className="resume-link" href={resumePreviewUrl} target="_blank" rel="noopener noreferrer">Resume</a>}
           <div className="drawer-socials">{socials.map(({ href, label, Icon }) => <a key={label} href={href} aria-label={label} target="_blank" rel="noopener noreferrer"><Icon size={18} /></a>)}</div>
         </motion.div>}
       </AnimatePresence>

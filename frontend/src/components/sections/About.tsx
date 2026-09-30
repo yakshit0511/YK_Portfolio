@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowDownRight, Download, Sparkles } from 'lucide-react';
+import { ArrowDownRight, Download, Eye, Sparkles } from 'lucide-react';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { GuideCharacter } from '../guide/GuideCharacter';
 import { CountUp } from '../ui/CountUp';
@@ -9,14 +9,19 @@ import { Reveal } from '../ui/Reveal';
 import { SectionHeading } from '../ui/SectionHeading';
 import { TiltCard } from '../ui/TiltCard';
 import { scrollToSection } from '../../utils/smoothScroll';
+import { getResumeDeliveryUrl } from '../../utils/resumeUrl';
 
 const highlights = ['Business Websites', 'ERP Systems', 'Admin Panels', 'REST APIs', 'WhatsApp API Integrations'];
 
 export function About() {
   const { data } = usePortfolio();
   const profile = data.profile;
+  const resumeUrl = profile?.resume?.url;
+  const resumePreviewUrl = resumeUrl ? getResumeDeliveryUrl(resumeUrl) : undefined;
+  const resumeDownloadUrl = resumeUrl ? getResumeDeliveryUrl(resumeUrl, true) : undefined;
   const paragraphs = (profile?.about ?? '').split(/\n\s*\n/).filter(Boolean);
-  const grade = data.education[0]?.grade?.match(/[0-9]+(?:\.[0-9]+)?/)?.[0] ?? '0';
+  const orderedEducation = [...data.education].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const grade = orderedEducation[0]?.grade?.match(/[0-9]+(?:\.[0-9]+)?/)?.[0] ?? '0';
   const cgpa = Number.parseFloat(grade);
   const projectCount = data.projects.length;
   const technologyCount = data.skills.reduce((total, group) => total + group.items.filter((skill) => skill.visible !== false).length, 0);
@@ -30,7 +35,12 @@ export function About() {
             {paragraphs.map((paragraph, index) => <Reveal key={`${index}-${paragraph.slice(0, 10)}`} delay={index * 0.1}><p>{paragraph}</p></Reveal>)}
             <div className="about-highlights">{highlights.map((item) => <span className="about-highlight" key={item}><Sparkles size={13} />{item}</span>)}</div>
             <div className="about-actions">
-              {profile?.resume?.url && <GlowButton href={profile.resume.url} target="_blank" rel="noopener noreferrer"><Download size={16} />Download Resume</GlowButton>}
+              {resumePreviewUrl && resumeDownloadUrl && (
+                <>
+                  <GlowButton href={resumePreviewUrl} target="_blank" rel="noopener noreferrer"><Eye size={16} />View Resume</GlowButton>
+                  <a href={resumeDownloadUrl} className="inline-flex items-center gap-2 rounded-full border border-blue-400/50 bg-slate-900/70 px-4 py-2 text-sm font-medium text-blue-200 transition hover:border-blue-300 hover:text-white"><Download size={16} />Download PDF</a>
+                </>
+              )}
               <GlowButton variant="outline" href="#projects" onClick={(event) => { event.preventDefault(); scrollToSection('projects'); }}><GlowRing size={24} />View Projects <ArrowDownRight size={16} /></GlowButton>
             </div>
           </div>

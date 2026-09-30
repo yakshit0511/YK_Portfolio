@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { guideImagePaths, tourSteps, type TourStep } from '../../data/tourSteps';
+import { getOptimizedImageSrc } from '../../utils/imageSources';
 
 interface TourContextValue {
   active: boolean;
@@ -27,7 +28,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
     setActive(true);
     try {
       const firstGuide = new Image();
-      firstGuide.src = guideImagePaths[0];
+      firstGuide.src = getOptimizedImageSrc(guideImagePaths[0]) ?? guideImagePaths[0];
     } catch { /* Browser image preloading is optional. */ }
   }, []);
 

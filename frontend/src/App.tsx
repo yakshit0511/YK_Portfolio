@@ -1,17 +1,19 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { BackgroundScene } from './components/layout/BackgroundScene';
 import { Loader } from './components/layout/Loader';
 import { Home } from './pages/Home';
-import { AdminPlaceholder } from './pages/AdminPlaceholder';
 import { NotFound } from './pages/NotFound';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { setSmoothScroller } from './utils/smoothScroll';
 import { HeroProvider, useHeroContext } from './context/HeroContext';
 import { TourProvider, useTour } from './components/guide/TourProvider';
+import { getOptimizedImageSrc } from './utils/imageSources';
+
+const AdminApp = lazy(() => import('./admin/AdminApp'));
 
 const TourOverlay = lazy(() => import('./components/guide/TourOverlay').then((module) => ({ default: module.TourOverlay })));
 const TourInvite = lazy(() => import('./components/guide/TourInvite').then((module) => ({ default: module.TourInvite })));
@@ -32,8 +34,9 @@ function TourWidgets() {
   </>;
 }
 
-const adminPath = (import.meta.env.VITE_ADMIN_PATH || '/yakshit-portfolio_5518').startsWith('/')
-  ? (import.meta.env.VITE_ADMIN_PATH || '/yakshit-portfolio_5518')
+const configuredAdminPath = import.meta.env.VITE_ADMIN_PATH || '/admin';
+const adminPath = configuredAdminPath.startsWith('/')
+  ? configuredAdminPath
   : `/${import.meta.env.VITE_ADMIN_PATH}`;
 
 function useIntroReady() {
@@ -50,7 +53,8 @@ function useIntroReady() {
       const image = new Image();
       image.onload = () => resolve();
       image.onerror = () => resolve();
-      image.src = '/images/cutouts/01_coding_0-3s%20(1).png';
+      const source = '/images/cutouts/01_coding_0-3s%20(1).png';
+      image.src = getOptimizedImageSrc(source) ?? source;
     });
     const fontsReady = document.fonts?.ready.then(() => undefined).catch(() => undefined) ?? Promise.resolve();
 
@@ -79,6 +83,8 @@ function useIntroReady() {
 export default function App() {
   const reducedMotion = useReducedMotion();
   const { progress, visible } = useIntroReady();
+  const location = useLocation();
+  const isAdminRoute = location.pathname === adminPath || location.pathname.startsWith(`${adminPath}/`);
 
   useEffect(() => {
     if (reducedMotion) {
@@ -97,13 +103,18 @@ export default function App() {
     };
   }, [reducedMotion]);
 
+  if (isAdminRoute) {
+    return <Suspense fallback={null}><AdminApp /></Suspense>;
+  }
+
   return <HeroProvider>
     <TourProvider>
       <BackgroundScene />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path={adminPath} element={<AdminPlaceholder />} />
+        <Route path={adminPath} element={<Suspense fallback={null}><AdminApp /></Suspense>} />
+        <Route path={`${adminPath}/*`} element={<Suspense fallback={null}><AdminApp /></Suspense>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />

@@ -3,15 +3,22 @@
   "version": "1.0.0",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed": "node src/seed.js",
-    "create-admin": "node src/scripts/createAdmin.js"
+    "seed:force": "node src/seed.js --force",
+    "create-admin": "node src/scripts/createAdmin.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
+    "compression": "^1.8.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -27,6 +34,9 @@
     "resend": "^4.3.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "mongodb-memory-server": "^10.4.3",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.3.0",
+    "vitest": "^2.1.9"
   }
 }

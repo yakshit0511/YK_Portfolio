@@ -211,17 +211,19 @@ export const uploadProfileResume = async (req, res) => {
     const profile = await ensureProfile();
 
     if (profile.resume?.publicId) {
-      await deleteAsset(profile.resume.publicId, 'raw');
+      await deleteAsset(profile.resume.publicId, profile.resume.resourceType || 'raw');
     }
 
     const result = await uploadBuffer(req.file.buffer, {
       folder: 'yakshit-portfolio/resume',
       resourceType: 'raw',
+      publicId: `resume-${Date.now()}.pdf`,
     });
 
     profile.resume = {
       url: result.url,
       publicId: result.publicId,
+      resourceType: 'raw',
     };
 
     await profile.save();
@@ -229,6 +231,7 @@ export const uploadProfileResume = async (req, res) => {
     return res.status(200).json({
       url: result.url,
       publicId: result.publicId,
+      resourceType: 'raw',
     });
   } catch (error) {
     return res.status(500).json({
@@ -242,7 +245,7 @@ export const deleteProfileResume = async (req, res) => {
     const profile = await ensureProfile();
 
     if (profile.resume?.publicId) {
-      await deleteAsset(profile.resume.publicId, 'raw');
+      await deleteAsset(profile.resume.publicId, profile.resume.resourceType || 'raw');
     }
 
     profile.resume = undefined;

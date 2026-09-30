@@ -5,6 +5,7 @@ import { scrollToSection } from '../../utils/smoothScroll';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { GlowRing } from '../ui/GlowRing';
 import { Confetti } from './Confetti';
+import { Picture } from '../ui/Picture';
 
 interface SuccessCardProps {
   firstName: string;
@@ -36,7 +37,7 @@ export function SuccessCard({ firstName, email, onSendAnother }: SuccessCardProp
       aria-hidden="true"
     >
       <GlowRing size={158} className="contact-success-ring" />
-      <img src="/images/cutouts/07_final_pose%20(1).png" alt="" />
+      <Picture src="/images/cutouts/07_final_pose%20(1).png" alt="" width={420} height={480} />
     </motion.div>
     <span className="eyebrow">MESSAGE RECEIVED</span>
     <h3 ref={headingRef} tabIndex={-1} aria-live="polite">Message sent!</h3>

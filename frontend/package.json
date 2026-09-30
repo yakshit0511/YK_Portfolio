@@ -5,7 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run generate:seo && tsc -b && vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "generate:seo": "node scripts/generate-seo.mjs",
     "preview": "vite preview",
     "lint": "eslint ."
   },
@@ -25,6 +31,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@playwright/test": "^1.63.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@types/three": "^0.172.0",
@@ -34,10 +43,14 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
+    "jsdom": "^25.0.1",
     "postcss": "^8.4.49",
+    "rollup-plugin-visualizer": "^5.14.0",
+    "sharp": "^0.33.5",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.19.1",
-    "vite": "^6.0.7"
+    "vite": "^6.0.7",
+    "vitest": "^2.1.9"
   }
 }

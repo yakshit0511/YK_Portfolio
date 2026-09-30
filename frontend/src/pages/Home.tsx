@@ -22,17 +22,20 @@ export function Home() {
   const profile = data.profile;
   const title = profile?.seo?.title || 'Yakshit Portfolio | Full Stack MERN Developer';
   const description = profile?.seo?.description || 'Yakshit Koshiya is a Full Stack MERN Developer building modern, responsive web applications.';
+  const siteUrl = (import.meta.env.VITE_SITE_URL || window.location.origin).replace(/\/$/, '');
 
   return <>
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
+      <link rel="canonical" href={`${siteUrl}/`} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content="/images/backgrounds/room-bg.jpg.png" />
+      <meta property="og:url" content={`${siteUrl}/`} />
+      <meta property="og:image" content={`${siteUrl}/og-image.png`} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content="/images/backgrounds/room-bg.jpg.png" />
+      <meta name="twitter:image" content={`${siteUrl}/og-image.png`} />
       <meta name="robots" content="index, follow" />
     </Helmet>
     <main id="top">

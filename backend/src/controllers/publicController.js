@@ -104,3 +104,39 @@ export const getPortfolio = async (req, res) => {
     });
   }
 };
+
+export const getResume = async (_req, res) => {
+  try {
+    const profile = await Profile.findOne().select('resume.url').lean();
+    if (!profile?.resume?.url) {
+      return res.status(404).json({ message: 'No resume is available.' });
+    }
+
+    const resumeUrl = new URL(profile.resume.url);
+    if (resumeUrl.protocol !== 'https:' || resumeUrl.hostname !== 'res.cloudinary.com') {
+      return res.status(502).json({ message: 'Resume storage URL is invalid.' });
+    }
+
+    const upstream = await fetch(resumeUrl, {
+      redirect: 'error',
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!upstream.ok) {
+      return res.status(502).json({ message: 'Resume could not be loaded.' });
+    }
+
+    const buffer = Buffer.from(await upstream.arrayBuffer());
+    res.set({
+      'Cache-Control': 'public, max-age=60',
+      'Content-Disposition': `${_req.query.download === '1' ? 'attachment' : 'inline'}; filename="resume.pdf"`,
+      'Content-Length': String(buffer.length),
+      'Content-Type': 'application/pdf',
+      'X-Content-Type-Options': 'nosniff',
+    });
+    return res.status(200).send(buffer);
+  } catch (error) {
+    return res.status(502).json({
+      message: process.env.NODE_ENV === 'production' ? 'Resume could not be loaded.' : error.message,
+    });
+  }
+};

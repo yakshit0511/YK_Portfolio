@@ -4,12 +4,13 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 
 import { createInquiry, rejectUnknownContactFields, validateContact } from '../controllers/contactController.js';
-import { getPortfolio } from '../controllers/publicController.js';
+import { getPortfolio, getResume } from '../controllers/publicController.js';
 import { originCheck } from '../middleware/csrf.js';
 
 const router = Router();
 
 router.get('/portfolio', getPortfolio);
+router.get('/resume', getResume);
 
 const contactLimitHandler = (retryAfterSeconds) => (_req, res) => {
 	res.set('Retry-After', String(retryAfterSeconds));

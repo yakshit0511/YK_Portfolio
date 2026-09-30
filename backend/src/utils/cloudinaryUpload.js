@@ -1,6 +1,6 @@
 import cloudinary from '../config/cloudinary.js';
 
-export const uploadBuffer = async (buffer, { folder, resourceType = 'image' } = {}) => {
+export const uploadBuffer = async (buffer, { folder, resourceType = 'image', publicId, format } = {}) => {
   if (!buffer) {
     throw new Error('No file buffer provided for upload.');
   }
@@ -10,6 +10,8 @@ export const uploadBuffer = async (buffer, { folder, resourceType = 'image' } = 
       {
         folder,
         resource_type: resourceType,
+        public_id: publicId,
+        format,
       },
       (error, result) => {
         if (error) {

@@ -37,6 +37,7 @@ const profileSchema = new mongoose.Schema(
     resume: {
       url: String,
       publicId: String,
+      resourceType: String,
     },
     socials: {
       github: String,

@@ -40,17 +40,26 @@ import {
 } from '../controllers/adminController.js';
 import { protect } from '../middleware/auth.js';
 import { originCheck } from '../middleware/csrf.js';
-import { validate } from '../middleware/validate.js';
+import { rejectUnknownFields, validate } from '../middleware/validate.js';
 import { uploadImage, uploadResume } from '../middleware/upload.js';
+import { env } from '../config/env.js';
 
 const router = Router();
 
 router.use(protect, originCheck);
 
+if (env.NODE_ENV !== 'production') {
+  router.get('/debug/ip', (req, res) => res.status(200).json({
+    ip: req.ip,
+    forwardedFor: req.get('x-forwarded-for') || null,
+  }));
+}
+
 router.get('/profile', getProfile);
 router.put(
   '/profile',
   [
+    rejectUnknownFields(['fullName', 'siteName', 'typingTitles', 'about', 'email', 'phone', 'showPhone', 'location', 'socials', 'seo', 'accentColor']),
     body('fullName').optional().isString(),
     body('siteName').optional().isString(),
     body('typingTitles').optional().isArray(),
@@ -74,6 +83,7 @@ router.get('/projects', getProjects);
 router.post(
   '/projects',
   [
+    rejectUnknownFields(['title', 'shortDescription', 'description', 'techStack', 'liveUrl', 'githubUrl', 'featured', 'visible', 'order']),
     body('title').notEmpty().withMessage('Project title is required.'),
     body('liveUrl').optional({ checkFalsy: true }).isURL().withMessage('liveUrl must be a valid URL.'),
     body('githubUrl').optional({ checkFalsy: true }).isURL().withMessage('githubUrl must be a valid URL.'),
@@ -85,6 +95,7 @@ router.put(
   '/projects/:id',
   [
     param('id').isMongoId().withMessage('Invalid project ID.'),
+    rejectUnknownFields(['title', 'shortDescription', 'description', 'techStack', 'liveUrl', 'githubUrl', 'featured', 'visible', 'order']),
     body('title').optional().notEmpty().withMessage('Project title cannot be empty.'),
     body('liveUrl').optional({ checkFalsy: true }).isURL().withMessage('liveUrl must be a valid URL.'),
     body('githubUrl').optional({ checkFalsy: true }).isURL().withMessage('githubUrl must be a valid URL.'),
@@ -101,6 +112,7 @@ router.get('/skills', getSkills);
 router.post(
   '/skills',
   [
+    rejectUnknownFields(['name', 'category', 'level', 'icon', 'visible', 'order']),
     body('name').notEmpty().withMessage('Skill name is required.'),
     body('category').isIn(['Frontend', 'Backend', 'Database', 'Tools & Deployment', 'Other']),
   ],
@@ -111,6 +123,7 @@ router.put(
   '/skills/:id',
   [
     param('id').isMongoId().withMessage('Invalid skill ID.'),
+    rejectUnknownFields(['name', 'category', 'level', 'icon', 'visible', 'order']),
     body('category').optional().isIn(['Frontend', 'Backend', 'Database', 'Tools & Deployment', 'Other']),
   ],
   validate,
@@ -122,32 +135,38 @@ router.patch('/skills/reorder', reorderSkills);
 router.get('/education', getEducation);
 router.post(
   '/education',
-  [body('institution').notEmpty().withMessage('Institution is required.')],
+  [
+    rejectUnknownFields(['institution', 'degree', 'field', 'startYear', 'endYear', 'currentSemester', 'grade', 'gradeNote', 'description', 'visible', 'order']),
+    body('institution').notEmpty().withMessage('Institution is required.'),
+  ],
   validate,
   createEducation
 );
-router.put('/education/:id', [param('id').isMongoId().withMessage('Invalid education ID.')], validate, updateEducation);
+router.put('/education/:id', [param('id').isMongoId().withMessage('Invalid education ID.'), rejectUnknownFields(['institution', 'degree', 'field', 'startYear', 'endYear', 'currentSemester', 'grade', 'gradeNote', 'description', 'visible', 'order'])], validate, updateEducation);
 router.delete('/education/:id', [param('id').isMongoId().withMessage('Invalid education ID.')], validate, deleteEducation);
 router.patch('/education/reorder', reorderEducation);
 
 router.get('/experience', getExperience);
 router.post(
   '/experience',
-  [body('role').notEmpty().withMessage('Experience role is required.')],
+  [
+    rejectUnknownFields(['role', 'company', 'startDate', 'endDate', 'current', 'description', 'techStack', 'visible', 'order']),
+    body('role').notEmpty().withMessage('Experience role is required.'),
+  ],
   validate,
   createExperience
 );
-router.put('/experience/:id', [param('id').isMongoId().withMessage('Invalid experience ID.')], validate, updateExperience);
+router.put('/experience/:id', [param('id').isMongoId().withMessage('Invalid experience ID.'), rejectUnknownFields(['role', 'company', 'startDate', 'endDate', 'current', 'description', 'techStack', 'visible', 'order'])], validate, updateExperience);
 router.delete('/experience/:id', [param('id').isMongoId().withMessage('Invalid experience ID.')], validate, deleteExperience);
 router.patch('/experience/reorder', reorderExperience);
 
 router.get('/sections', getSections);
-router.put('/sections', updateSections);
+router.put('/sections', rejectUnknownFields(['key', 'title', 'visible', 'order']), updateSections);
 
 router.get('/inquiries', getInquiries);
 router.post('/inquiries/:id/resend-email', [param('id').isMongoId().withMessage('Invalid inquiry ID.')], validate, resendInquiryEmail);
 router.get('/inquiries/:id', [param('id').isMongoId().withMessage('Invalid inquiry ID.')], validate, getInquiryById);
-router.patch('/inquiries/:id/status', [param('id').isMongoId().withMessage('Invalid inquiry ID.')], updateInquiryStatus);
+router.patch('/inquiries/:id/status', [param('id').isMongoId().withMessage('Invalid inquiry ID.'), rejectUnknownFields(['status'])], updateInquiryStatus);
 router.delete('/inquiries/:id', [param('id').isMongoId().withMessage('Invalid inquiry ID.')], validate, deleteInquiry);
 
 router.get('/dashboard', getDashboardStats);

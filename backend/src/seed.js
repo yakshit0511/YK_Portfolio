@@ -1,4 +1,8 @@
 import mongoose from 'mongoose';
+import path from 'node:path';
+import { createInterface } from 'node:readline/promises';
+import { stdin, stdout } from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 import { env } from './config/env.js';
 import Education from './models/Education.js';
@@ -15,7 +19,6 @@ const profileData = {
     'Problem Solver',
   ],
   email: env.ADMIN_EMAIL,
-  phone: '8780150610',
   showPhone: false,
   location: '',
   socials: {
@@ -96,29 +99,55 @@ const sectionSettingData = [
   { key: 'contact', title: 'Contact', visible: true, order: 5 },
 ];
 
-const seedDatabase = async () => {
+export const seedDatabase = async ({ force = process.argv.includes('--force') } = {}) => {
+  const ownsConnection = mongoose.connection.readyState === 0;
   try {
-    await mongoose.connect(env.MONGO_URI, {
-      serverSelectionTimeoutMS: 10000,
-    });
+    if (ownsConnection) {
+      await mongoose.connect(env.MONGO_URI, {
+        serverSelectionTimeoutMS: 10000,
+      });
+    }
 
-    await Profile.deleteMany({});
-    await Skill.deleteMany({});
-    await Education.deleteMany({});
-    await SectionSetting.deleteMany({});
+    const profileExists = await Profile.exists({});
+    if (profileExists && !force) {
+      console.log('Data already exists. Seed skipped. Use --force to overwrite.');
+      return;
+    }
 
-    await Profile.create(profileData);
-    await Skill.insertMany(skillData);
-    await Education.insertMany(educationData);
-    await SectionSetting.insertMany(sectionSettingData);
+    if (force && env.NODE_ENV === 'production' && process.env.CONFIRM_RESET !== 'RESET') {
+      if (!stdin.isTTY) {
+        throw new Error('Production reset requires CONFIRM_RESET=RESET or an interactive confirmation.');
+      }
+      const prompt = createInterface({ input: stdin, output: stdout });
+      const confirmation = await prompt.question('This deletes seeded portfolio data. Type RESET to continue: ');
+      prompt.close();
+      if (confirmation !== 'RESET') {
+        console.log('Seed reset cancelled.');
+        return;
+      }
+    }
+
+    if (force) {
+      await Profile.deleteMany({});
+      await Skill.deleteMany({});
+      await Education.deleteMany({});
+      await SectionSetting.deleteMany({});
+    }
+
+    if (!(await Profile.exists({}))) await Profile.create(profileData);
+    if (await Skill.countDocuments() === 0) await Skill.insertMany(skillData);
+    if (await Education.countDocuments() === 0) await Education.insertMany(educationData);
+    if (await SectionSetting.countDocuments() === 0) await SectionSetting.insertMany(sectionSettingData);
 
     console.log('Seed completed successfully: profile, skills, education, and section settings were recreated.');
   } catch (error) {
     console.error('Seed failed:', error.message);
     process.exitCode = 1;
   } finally {
-    await mongoose.disconnect();
+    if (ownsConnection) await mongoose.disconnect();
   }
 };
 
-seedDatabase();
+const currentFile = fileURLToPath(import.meta.url);
+const invokedFile = process.argv[1] ? path.resolve(process.argv[1]) : '';
+if (currentFile === invokedFile) await seedDatabase();

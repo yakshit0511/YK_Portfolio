@@ -6,6 +6,7 @@ import { GuideCharacter } from '../guide/GuideCharacter';
 import { SectionHeading } from '../ui/SectionHeading';
 import { TiltCard } from '../ui/TiltCard';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { cloudinaryImageUrl } from '../../utils/cloudinaryUrl';
 
 const ProjectModal = lazy(() => import('./ProjectModal'));
 
@@ -45,7 +46,7 @@ export function Projects() {
               <TiltCard className="project-card">
                 <button className="project-card-open" type="button" onClick={() => openProject(project)} aria-label={`View details for ${project.title}`}>
                   <div className={`project-cover${project.images?.[0] ? '' : ' project-cover--empty'}`}>
-                    {project.images?.[0] && <img src={project.images[0].url} alt={`${project.title} preview`} loading="lazy" width="640" height="360" onError={(event) => event.currentTarget.remove()} />}
+                    {project.images?.[0] && <img src={cloudinaryImageUrl(project.images[0].url, 800)} alt={`${project.title} preview`} loading="lazy" width={800} height={450} onError={(event) => event.currentTarget.remove()} />}
                     {project.featured && <span className="featured-badge">Featured</span>}
                   </div>
                   <div className="project-card-content">

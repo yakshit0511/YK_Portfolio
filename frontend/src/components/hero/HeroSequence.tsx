@@ -5,6 +5,8 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useHeroContext, useSetSequenceDone } from '../../context/HeroContext';
 import { ScrollCue } from './ScrollCue';
+import { Picture } from '../ui/Picture';
+import { getOptimizedImageSrc } from '../../utils/imageSources';
 
 const frames = [
   { src: '/images/cutouts/01_coding_0-3s%20(1).png', duration: 3000 },
@@ -132,7 +134,7 @@ export function HeroSequence() {
       images.push(image);
       image.onload = () => updateLoaded(index, true);
       image.onerror = () => updateLoaded(index, false);
-      image.src = frames[index].src;
+      image.src = getOptimizedImageSrc(frames[index].src) ?? frames[index].src;
       if (image.complete) updateLoaded(index, image.naturalWidth > 0);
     }
 
@@ -205,7 +207,7 @@ export function HeroSequence() {
             exit={{ opacity: 0 }}
             transition={{ opacity: { duration: staticMode ? 0 : 0.6 }, scale: { duration: staticMode ? 0 : frames[frameIndex].duration / 1000, ease: 'linear' } }}
           >
-            <img className="hero-sequence-image" src={frames[frameIndex].src} alt="" aria-hidden="true" style={{ objectPosition: objectPositions[frameIndex] }} />
+            <Picture className="hero-sequence-image" src={frames[frameIndex].src} alt="" aria-hidden="true" width={720} height={900} style={{ objectPosition: objectPositions[frameIndex] }} />
           </motion.div>}
         </AnimatePresence>
         {loaded[frameIndex] && frameIndex === frames.length - 1 && !staticMode && <button className="sequence-replay" type="button" onClick={replay} aria-label="Replay hero image sequence" title="Replay sequence"><RotateCcw size={17} /></button>}

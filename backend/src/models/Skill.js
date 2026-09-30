@@ -35,6 +35,8 @@ const skillSchema = new mongoose.Schema(
   }
 );
 
+skillSchema.index({ category: 1, order: 1 });
+
 const Skill = mongoose.model('Skill', skillSchema);
 
 export default Skill;

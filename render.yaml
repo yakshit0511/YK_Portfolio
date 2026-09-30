@@ -1,0 +1,50 @@
+services:
+  - type: web
+    name: yakshit-portfolio-api
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: CLIENT_URL
+        value: https://YOUR-VERCEL-SITE.vercel.app
+      - key: COOKIE_SAMESITE
+        value: lax
+      - key: TRUST_PROXY_HOPS
+        value: "1"
+      - key: ADMIN_PATH
+        value: /admin
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: AUTO_REPLY_ENABLED
+        value: "false"
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
+      - key: INQUIRY_TO_EMAIL
+        sync: false

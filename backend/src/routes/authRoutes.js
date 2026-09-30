@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { changePassword, getMe, login, logout } from '../controllers/authController.js';
 import { protect } from '../middleware/auth.js';
 import { originCheck } from '../middleware/csrf.js';
-import { validate } from '../middleware/validate.js';
+import { rejectUnknownFields, validate } from '../middleware/validate.js';
 
 const router = Router();
 
@@ -24,6 +24,7 @@ router.use(originCheck);
 router.post(
   '/login',
   loginLimiter,
+  rejectUnknownFields(['email', 'password']),
   [
     body('email').isEmail().withMessage('A valid email is required.'),
     body('password').notEmpty().withMessage('Password is required.'),
@@ -39,6 +40,7 @@ router.get('/me', protect, getMe);
 router.put(
   '/change-password',
   protect,
+  rejectUnknownFields(['currentPassword', 'newPassword']),
   [
     body('currentPassword').notEmpty().withMessage('Current password is required.'),
     body('newPassword').isLength({ min: 12 }).withMessage('New password must be at least 12 characters long.'),
