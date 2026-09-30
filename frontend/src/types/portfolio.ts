@@ -72,6 +72,7 @@ export interface Experience {
   current?: boolean;
   description?: string;
   techStack?: string[];
+  visible?: boolean;
   order?: number;
 }
 

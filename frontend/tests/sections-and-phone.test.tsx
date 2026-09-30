@@ -36,6 +36,16 @@ describe('portfolio visibility', () => {
     expect(screen.getByTestId('contact')).toBeInTheDocument();
   });
 
+  it('includes the internship entries in the default experience data', () => {
+    expect(fallbackData.experience).toHaveLength(2);
+    expect(fallbackData.experience.map((item) => item.company)).toEqual([
+      'TechnoHacks Solutions',
+      'DZ Infotech Bhavnagar, Gujarat, India (Remote)',
+    ]);
+    expect(fallbackData.experience[0].role).toBe('Full Stack Web Development Intern');
+    expect(fallbackData.experience[1].role).toBe('Full Stack Web Development Intern');
+  });
+
   it('does not show phone or WhatsApp links when no public phone is set', () => {
     portfolioState.data = fallbackData;
     render(<ContactInfo />);

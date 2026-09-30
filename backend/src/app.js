@@ -28,13 +28,19 @@ app.use(compression());
 app.use(cors({
   origin(origin, callback) {
     if (!origin) return callback(null, false);
+
     let normalizedOrigin;
     try {
       normalizedOrigin = new URL(origin).origin;
     } catch {
       return callback(null, false);
     }
-    return callback(null, env.CLIENT_URLS.includes(normalizedOrigin) ? normalizedOrigin : false);
+
+    const isKnownOrigin = env.CLIENT_URLS.includes(normalizedOrigin);
+    const isLocalDevOrigin = /^https?:\/\/(localhost|127\.0\.0\.1)(?::\d+)?$/.test(normalizedOrigin);
+    const isVercelOrigin = /^https:\/\/.*\.vercel\.app$/.test(normalizedOrigin);
+
+    return callback(null, isKnownOrigin || isLocalDevOrigin || isVercelOrigin ? normalizedOrigin : false);
   },
   credentials: true,
 }));

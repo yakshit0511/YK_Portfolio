@@ -10,7 +10,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HelmetProvider>
       <PortfolioProvider>
-        <BrowserRouter><App /></BrowserRouter>
+        <BrowserRouter future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}><App /></BrowserRouter>
       </PortfolioProvider>
     </HelmetProvider>
   </React.StrictMode>,

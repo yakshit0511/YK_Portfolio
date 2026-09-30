@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 import { env } from './config/env.js';
 import Education from './models/Education.js';
+import Experience from './models/Experience.js';
 import Profile from './models/Profile.js';
 import SectionSetting from './models/SectionSetting.js';
 import Skill from './models/Skill.js';
@@ -90,6 +91,29 @@ const educationData = [
   },
 ];
 
+const experienceData = [
+  {
+    role: 'Full Stack Web Development Intern',
+    company: 'TechnoHacks Solutions',
+    startDate: 'May 2025',
+    endDate: 'Jun 2025',
+    current: false,
+    description: 'Built and maintained full-stack web applications using React.js, Next.js, and Node.js for production environments. Developed and integrated RESTful APIs connecting frontend interfaces with backend services and databases. Implemented authentication systems, managed MongoDB databases, and ensured code quality through reviews.',
+    visible: true,
+    order: 0,
+  },
+  {
+    role: 'Full Stack Web Development Intern',
+    company: 'DZ Infotech Bhavnagar, Gujarat, India (Remote)',
+    startDate: 'May 2026',
+    endDate: 'Present',
+    current: true,
+    description: 'Built and maintained full-stack MERN applications and developed RESTful APIs connecting frontend, backend, and databases. Independently handled deployment and testing, ensuring smooth releases and reliable application performance.',
+    visible: true,
+    order: 1,
+  },
+];
+
 const sectionSettingData = [
   { key: 'about', title: 'About', visible: true, order: 0 },
   { key: 'skills', title: 'Skills', visible: true, order: 1 },
@@ -131,15 +155,17 @@ export const seedDatabase = async ({ force = process.argv.includes('--force') } 
       await Profile.deleteMany({});
       await Skill.deleteMany({});
       await Education.deleteMany({});
+      await Experience.deleteMany({});
       await SectionSetting.deleteMany({});
     }
 
     if (!(await Profile.exists({}))) await Profile.create(profileData);
     if (await Skill.countDocuments() === 0) await Skill.insertMany(skillData);
     if (await Education.countDocuments() === 0) await Education.insertMany(educationData);
+    if (await Experience.countDocuments() === 0) await Experience.insertMany(experienceData);
     if (await SectionSetting.countDocuments() === 0) await SectionSetting.insertMany(sectionSettingData);
 
-    console.log('Seed completed successfully: profile, skills, education, and section settings were recreated.');
+    console.log('Seed completed successfully: profile, skills, education, experience, and section settings were recreated.');
   } catch (error) {
     console.error('Seed failed:', error.message);
     process.exitCode = 1;

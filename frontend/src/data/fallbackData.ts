@@ -61,5 +61,26 @@ export const fallbackData: PortfolioData = {
       startYear: 2021, endYear: 2023, grade: '79.23%',
     },
   ],
-  experience: [],
+  experience: [
+    {
+      role: 'Full Stack Web Development Intern',
+      company: 'TechnoHacks Solutions',
+      startDate: 'May 2025',
+      endDate: 'Jun 2025',
+      current: false,
+      description: 'Built and maintained full-stack web applications using React.js, Next.js, and Node.js for production environments. Developed and integrated RESTful APIs connecting frontend interfaces with backend services and databases. Implemented authentication systems, managed MongoDB databases, and ensured code quality through reviews.',
+      visible: true,
+      order: 0,
+    },
+    {
+      role: 'Full Stack Web Development Intern',
+      company: 'DZ Infotech Bhavnagar, Gujarat, India (Remote)',
+      startDate: 'May 2026',
+      endDate: 'Present',
+      current: true,
+      description: 'Built and maintained full-stack MERN applications and developed RESTful APIs connecting frontend, backend, and databases. Independently handled deployment and testing, ensuring smooth releases and reliable application performance.',
+      visible: true,
+      order: 1,
+    },
+  ],
 };
