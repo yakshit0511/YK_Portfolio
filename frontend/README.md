@@ -10,7 +10,7 @@ npm install
 npm run dev
 ```
 
-Set `VITE_ADMIN_PATH` in `.env.local` as needed. Local development calls the backend at `http://localhost:5000`; Vercel production proxies `/api` to the Render service through `vercel.json`, keeping admin cookies first-party. The site can render without the backend; API data replaces the fallback profile after the request completes.
+Set `VITE_ADMIN_PATH` in `.env.local` as needed. Local development calls `VITE_API_BASE_URL` (default `http://localhost:5000`); Vercel production proxies `/api` to the Render service through `vercel.json`, keeping admin cookies first-party. The site can render without the backend; API data replaces the fallback profile after the request completes.
 
 The public site includes certificate and GitHub sections, project case studies at `/projects/:slug`, a `Ctrl+K` / `Cmd+K` command palette, and a persisted lite-mode toggle. Anonymous insights are opt-in; the site sends no analytics until a visitor accepts, and the choice can be changed from the footer privacy control. Existing databases need the additive `npm run migrate:bonus` command from the backend before legacy projects receive their case-study URLs.
 

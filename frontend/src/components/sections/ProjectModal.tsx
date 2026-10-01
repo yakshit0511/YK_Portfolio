@@ -48,7 +48,7 @@ export default function ProjectModal({ project, onClose }: { project: Project | 
 
   const dialog = <AnimatePresence>
     {project && <motion.div key={project.slug || project.title} className="project-modal-backdrop" initial={reducedMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} exit={reducedMotion ? undefined : { opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.2 }} onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-      <motion.div ref={dialogRef} className="project-modal glass" role="dialog" aria-modal="true" aria-labelledby="project-modal-title" initial={reducedMotion ? false : { opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={reducedMotion ? undefined : { opacity: 0, y: 18, scale: 0.98 }} transition={{ duration: reducedMotion ? 0 : 0.25 }}>
+      <motion.div ref={dialogRef} className={`project-modal glass${currentImage ? '' : ' project-modal--no-image'}`} role="dialog" aria-modal="true" aria-labelledby="project-modal-title" initial={reducedMotion ? false : { opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={reducedMotion ? undefined : { opacity: 0, y: 18, scale: 0.98 }} transition={{ duration: reducedMotion ? 0 : 0.25 }}>
         <button className="project-modal-close icon-button" type="button" onClick={onClose} aria-label="Close project details"><X size={19} /></button>
         {currentImage && <div className="project-modal-image" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
           <img src={cloudinaryImageUrl(currentImage.url, 1400)} alt={`${project.title} screenshot ${imageIndex + 1}`} width={1400} height={788} />

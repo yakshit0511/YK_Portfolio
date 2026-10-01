@@ -22,11 +22,9 @@ export function Skills() {
   const reducedMotion = useReducedMotion();
   const skillGroups = data.skills.length ? data.skills : fallbackData.skills;
   const groups = [...skillGroups].sort((a, b) => ['Frontend', 'Backend', 'Database', 'Tools & Deployment', 'Other'].indexOf(a.category) - ['Frontend', 'Backend', 'Database', 'Tools & Deployment', 'Other'].indexOf(b.category));
-  const names = groups.flatMap((group) => group.items.filter((skill) => skill.visible !== false).map((skill) => skill.name));
-  const orbNames = [
-    'React.js', 'Node.js', 'MongoDB', 'TypeScript', 'JavaScript',
-    'HTML5', 'CSS3', 'Vercel',
-  ].filter((name) => names.includes(name));
+  const orbNames = [...new Set(groups.flatMap((group) => group.items
+    .filter((skill) => skill.visible !== false && (skill.level ?? 0) > 90)
+    .map((skill) => skill.name)))];
   const showOrb = !isMobile && !lowPower && !reducedMotion && orbNames.length > 0;
 
   return <section id="skills" className="portfolio-section skills-section" aria-labelledby="skills-heading">
