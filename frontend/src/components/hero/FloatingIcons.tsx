@@ -15,17 +15,17 @@ import {
 } from 'react-icons/si';
 
 const technologies: { name: string; Icon: IconType; color: string; position: [number, number, number] }[] = [
-  { name: 'React.js', Icon: SiReact, color: '#61dafb', position: [-5.4, 2.2, -1] },
-  { name: 'Node.js', Icon: SiNodedotjs, color: '#83cd29', position: [4.4, 2.9, -1] },
+  { name: 'React.js', Icon: SiReact, color: '#61dafb', position: [-5.2, 1.8, -1] },
+  { name: 'Node.js', Icon: SiNodedotjs, color: '#83cd29', position: [4.2, 1.9, -1] },
   { name: 'MongoDB', Icon: SiMongodb, color: '#47a248', position: [4.3, -1.2, -1] },
   { name: 'Express', Icon: SiExpress, color: '#e8efff', position: [-5.1, -1.2, -1] },
-  { name: 'TypeScript', Icon: SiTypescript, color: '#3178c6', position: [5.9, 0.6, -2] },
-  { name: 'JavaScript', Icon: SiJavascript, color: '#f7df1e', position: [-6.2, 0.6, -2] },
-  { name: 'HTML5', Icon: SiHtml5, color: '#e44d26', position: [-1.6, 3.5, -2] },
-  { name: 'CSS3', Icon: SiCss, color: '#1572b6', position: [1.7, 3.9, -2] },
+  { name: 'TypeScript', Icon: SiTypescript, color: '#3178c6', position: [5.9, 0.4, -2] },
+  { name: 'JavaScript', Icon: SiJavascript, color: '#f7df1e', position: [-6.2, 0.4, -2] },
+  { name: 'HTML5', Icon: SiHtml5, color: '#e44d26', position: [-2.2, 1.9, -2] },
+  { name: 'CSS3', Icon: SiCss, color: '#1572b6', position: [2.0, 2.0, -2] },
   { name: 'Tailwind', Icon: SiTailwindcss, color: '#38bdf8', position: [1.1, -3.2, -2] },
   { name: 'Git', Icon: SiGit, color: '#f05032', position: [-2.1, -3.4, -2] },
-  { name: 'GitHub', Icon: SiGithub, color: '#ffffff', position: [0.8, 0.8, -2] },
+  { name: 'GitHub', Icon: SiGithub, color: '#ffffff', position: [0.8, 0.6, -2] },
 ];
 
 export function FloatingIcons() {

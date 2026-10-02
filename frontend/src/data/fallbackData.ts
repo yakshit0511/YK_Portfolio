@@ -58,7 +58,7 @@ export const fallbackData: PortfolioData = {
   certificates: [],
   education: [
     {
-      institution: 'CHARUSAT University', degree: 'B.Tech', field: 'Information Technology', startYear: 2023,
+      institution: 'Charotar University of Science and Technology (CHARUSAT)', degree: 'B.Tech', field: 'Information Technology', startYear: 2023,
       endYear: 2027, currentSemester: '7th Semester', grade: '9.25 CGPA', gradeNote: 'Up to 6th semester',
     },
     {

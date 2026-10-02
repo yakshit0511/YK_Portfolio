@@ -69,7 +69,7 @@ const skillData = [
 
 const educationData = [
   {
-    institution: 'CHARUSAT University',
+    institution: 'Charotar University of Science and Technology (CHARUSAT)',
     degree: 'B.Tech',
     field: 'Information Technology',
     startYear: 2023,

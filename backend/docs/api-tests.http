@@ -170,7 +170,7 @@ Content-Type: application/json
 Origin: http://localhost:5173
 
 {
-  "institution": "CHARUSAT University",
+  "institution": "Charotar University of Science and Technology (CHARUSAT)",
   "degree": "B.Tech",
   "field": "Information Technology",
   "endYear": 2027,
