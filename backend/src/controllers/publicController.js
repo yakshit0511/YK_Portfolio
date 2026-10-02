@@ -21,7 +21,83 @@ const defaultSections = [
   { key: 'contact', title: 'Contact', visible: true, order: 7 },
 ];
 
-const githubCache = { value: null, expiresAt: 0 };
+const defaultGithubData = {
+  available: true,
+  user: {
+    login: 'yakshit0511',
+    publicRepos: 62,
+    followers: 3,
+    profileUrl: 'https://github.com/yakshit0511',
+  },
+  stats: {
+    totalStars: 0,
+    topLanguages: [
+      { name: 'JavaScript', count: 29 },
+      { name: 'TypeScript', count: 11 },
+      { name: 'HTML', count: 8 },
+      { name: 'Dart', count: 5 },
+      { name: 'CSS', count: 4 },
+    ],
+  },
+  repos: [
+    {
+      name: 'YK_Portfolio',
+      description: 'Modern, high-performance portfolio website built with React, TypeScript, and Node.js.',
+      url: 'https://github.com/yakshit0511/YK_Portfolio',
+      language: 'TypeScript',
+      stars: 0,
+      forks: 0,
+      topics: ['react', 'typescript', 'portfolio'],
+    },
+    {
+      name: 'dz-infotech',
+      description: 'Production web application with interactive features and responsive modern architecture.',
+      url: 'https://github.com/yakshit0511/dz-infotech',
+      language: 'TypeScript',
+      stars: 0,
+      forks: 0,
+      topics: ['typescript', 'fullstack'],
+    },
+    {
+      name: 'second-hand-car-dealer',
+      description: 'Full-stack platform for vehicle browsing, filtering, and customer inquiries.',
+      url: 'https://github.com/yakshit0511/second-hand-car-dealer',
+      language: 'TypeScript',
+      stars: 0,
+      forks: 0,
+      topics: ['typescript', 'react', 'mongodb'],
+    },
+    {
+      name: 'Yakshit_Koshiya_Prodigy_Task-3',
+      description: 'Interactive web application featuring responsive design and state management.',
+      url: 'https://github.com/yakshit0511/Yakshit_Koshiya_Prodigy_Task-3',
+      language: 'JavaScript',
+      stars: 0,
+      forks: 0,
+      topics: ['javascript', 'frontend'],
+    },
+    {
+      name: 'Yakshit_Koshiya_Prodigy_Task-2',
+      description: 'Dynamic frontend application with real-time UI controls and modular components.',
+      url: 'https://github.com/yakshit0511/Yakshit_Koshiya_Prodigy_Task-2',
+      language: 'JavaScript',
+      stars: 0,
+      forks: 0,
+      topics: ['javascript', 'web-development'],
+    },
+    {
+      name: 'Yakshit_Koshiya_Prodigy_Task-1',
+      description: 'Responsive user interface built with clean architecture and CSS layout systems.',
+      url: 'https://github.com/yakshit0511/Yakshit_Koshiya_Prodigy_Task-1',
+      language: 'JavaScript',
+      stars: 0,
+      forks: 0,
+      topics: ['html5', 'css3', 'javascript'],
+    },
+  ],
+};
+
+const githubCache = { value: defaultGithubData, expiresAt: 0 };
 const slugRegex = /^[a-z0-9-]{1,80}$/;
 
 const stripSensitiveFields = (item) => {
@@ -185,11 +261,7 @@ export const getProjectBySlug = async (req, res) => {
 export const getGithubActivity = async (req, res) => {
   try {
     const profile = await Profile.findOne().select('socials.github').lean();
-    const username = parseGithubUsername(profile?.socials?.github || '');
-
-    if (!username) {
-      return res.set('Cache-Control', 'public, max-age=300').status(200).json({ available: false });
-    }
+    const username = parseGithubUsername(profile?.socials?.github || '') || 'yakshit0511';
 
     const now = Date.now();
     if (githubCache.value?.user?.login?.toLowerCase() === username.toLowerCase() && githubCache.expiresAt > now) {
@@ -204,7 +276,7 @@ export const getGithubActivity = async (req, res) => {
     if (env.GITHUB_TOKEN) headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`;
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    const timeout = setTimeout(() => controller.abort(), 12000);
 
     try {
       const [userRes, repoRes] = await Promise.all([

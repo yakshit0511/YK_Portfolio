@@ -4,6 +4,7 @@ import { fetchGithubActivity } from '../../api/portfolio';
 import type { GithubActivityData } from '../../types/portfolio';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { SectionHeading } from '../ui/SectionHeading';
+import { TiltCard } from '../ui/TiltCard';
 
 export function GithubActivity() {
   const { data } = usePortfolio();
@@ -35,15 +36,19 @@ export function GithubActivity() {
         </div>
         {activity.stats?.topLanguages.length ? <div className="github-languages" aria-label="Most used repository languages">{activity.stats.topLanguages.map((language) => <span className="skill-chip" key={language.name}>{language.name}<b>{language.count}</b></span>)}</div> : null}
         <div className="github-repositories">
-          {activity.repos?.map((repo) => <article className="github-repository" key={repo.name}>
-            <a href={repo.url} target="_blank" rel="noopener noreferrer"><h3>{repo.name}</h3><ExternalLink size={15} /></a>
-            <p>{repo.description || 'Open-source project'}</p>
-            <div className="github-repo-meta">
-              {repo.language && <span>{repo.language}</span>}
-              <span><Star size={13} /> {repo.stars}</span>
-              <span><GitFork size={13} /> {repo.forks}</span>
-            </div>
-          </article>)}
+          {activity.repos?.map((repo) => (
+            <TiltCard key={repo.name} className="github-repository-tilt">
+              <article className="github-repository">
+                <a href={repo.url} target="_blank" rel="noopener noreferrer"><h3>{repo.name}</h3><ExternalLink size={15} /></a>
+                <p>{repo.description || 'Open-source repository with modern architecture and clean codebase.'}</p>
+                <div className="github-repo-meta">
+                  {repo.language && <span>{repo.language}</span>}
+                  <span><Star size={13} /> {repo.stars}</span>
+                  <span><GitFork size={13} /> {repo.forks}</span>
+                </div>
+              </article>
+            </TiltCard>
+          ))}
         </div>
         {activity.stale && <p className="github-cache-note">Showing the latest cached GitHub data.</p>}
       </> : <div className="github-unavailable"><Github size={22} /><p>GitHub activity is temporarily unavailable.</p>{safeProfileUrl && <a href={safeProfileUrl} target="_blank" rel="noopener noreferrer">Visit profile <ExternalLink size={14} /></a>}</div>}

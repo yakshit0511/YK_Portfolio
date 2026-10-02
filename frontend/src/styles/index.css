@@ -205,13 +205,17 @@ button { font: inherit; }
 .github-languages { display: flex; flex-wrap: wrap; gap: 8px; margin: 17px 0; }
 .github-languages .skill-chip { gap: 8px; }
 .github-languages b { color: #80d9f5; font-weight: 500; }
-.github-repositories { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
-.github-repository { min-width: 0; padding: 15px 0; border-top: 2px solid rgb(97 191 229 / 50%); border-bottom: 1px solid rgb(135 173 229 / 20%); }
-.github-repository > a { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #e3f2ff; }
-.github-repository h3 { overflow-wrap: anywhere; margin: 0; font: 500 14px 'Sora', sans-serif; }
-.github-repository p { display: -webkit-box; min-height: 40px; overflow: hidden; margin: 9px 0 12px; color: #aebfdd; font-size: 11px; line-height: 1.7; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-.github-repo-meta { display: flex; flex-wrap: wrap; gap: 13px; color: #9eb3d3; font: 10px 'JetBrains Mono', monospace; }
-.github-repo-meta span { display: inline-flex; align-items: center; gap: 4px; }
+.github-repositories { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }
+.github-repository-tilt { height: 100%; }
+.github-repository { min-width: 0; padding: 20px 22px; border-radius: 14px; background: rgba(12, 23, 44, 0.45); border: 1px solid rgba(135, 173, 229, 0.18); backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: border-color 0.28s ease, box-shadow 0.28s ease; position: relative; overflow: hidden; }
+.github-repository::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #2f7bff, #00d2ff, transparent); opacity: 0.7; }
+.github-repository:hover { border-color: rgba(96, 220, 255, 0.45); box-shadow: 0 12px 32px -8px rgba(47, 123, 255, 0.25); }
+.github-repository > a { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #e3f2ff; text-decoration: none; }
+.github-repository > a:hover h3 { color: #60dcff; }
+.github-repository h3 { overflow-wrap: anywhere; margin: 0; font: 600 15px 'Sora', sans-serif; transition: color 0.2s ease; }
+.github-repository p { display: -webkit-box; min-height: 38px; overflow: hidden; margin: 10px 0 14px; color: #aebfdd; font-size: 12px; line-height: 1.6; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.github-repo-meta { display: flex; flex-wrap: wrap; gap: 14px; color: #9eb3d3; font: 11px 'JetBrains Mono', monospace; padding-top: 10px; border-top: 1px solid rgba(135, 173, 229, 0.12); margin-top: auto; }
+.github-repo-meta span { display: inline-flex; align-items: center; gap: 5px; }
 .github-unavailable { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; color: #acbedc; }
 .github-unavailable p { margin: 0; font-size: 13px; }
 .github-cache-note { color: #8096ba; font-size: 10px; }
