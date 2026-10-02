@@ -1,7 +1,7 @@
 import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Html, OrbitControls } from '@react-three/drei';
-import type * as THREE from 'three';
+import * as THREE from 'three';
 import { useInView } from '../../hooks/useInView';
 
 class OrbBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -23,9 +23,33 @@ function SkillSphere({ names }: { names: string[] }) {
 
   useFrame((_, delta) => { if (group.current && !hovered) group.current.rotation.y += delta * 0.035; });
 
-  return <group ref={group}>{points.map(({ name, position }) => <Html key={name} position={position} center sprite distanceFactor={10.5}>
-    <span className={`orb-skill${hovered === name ? ' orb-skill--active' : ''}`} onPointerEnter={() => setHovered(name)} onPointerLeave={() => setHovered('')}>{name}</span>
-  </Html>)}</group>;
+  return (
+    <group ref={group}>
+      <mesh>
+        <sphereGeometry args={[1.9, 16, 16]} />
+        <meshBasicMaterial color="#38bdf8" wireframe transparent opacity={0.06} />
+      </mesh>
+      <mesh rotation={[Math.PI / 3, 0, 0]}>
+        <ringGeometry args={[2.2, 2.22, 64]} />
+        <meshBasicMaterial color="#54e3ff" transparent opacity={0.16} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 3, 0, 0]}>
+        <ringGeometry args={[2.2, 2.22, 64]} />
+        <meshBasicMaterial color="#818cf8" transparent opacity={0.14} side={THREE.DoubleSide} />
+      </mesh>
+      {points.map(({ name, position }) => (
+        <Html key={name} position={position} center sprite distanceFactor={10.5}>
+          <span
+            className={`orb-skill${hovered === name ? ' orb-skill--active' : ''}`}
+            onPointerEnter={() => setHovered(name)}
+            onPointerLeave={() => setHovered('')}
+          >
+            {name}
+          </span>
+        </Html>
+      ))}
+    </group>
+  );
 }
 
 export default function SkillsOrb({ names }: { names: string[] }) {

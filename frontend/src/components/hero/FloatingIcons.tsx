@@ -29,13 +29,22 @@ const technologies: { name: string; Icon: IconType; color: string; position: [nu
 ];
 
 export function FloatingIcons() {
-  return <group>{technologies.map(({ name, Icon, color, position }, index) => (
-    <Float key={name} speed={0.7 + index * 0.08} rotationIntensity={0.12} floatIntensity={0.25}>
-      <Html position={position} center transform distanceFactor={9} style={{ pointerEvents: 'none' }}>
-        <div className="tech-float-card" aria-label={name}>
-          <Icon size={25} color={color} aria-hidden="true" /><span>{name}</span>
-        </div>
-      </Html>
-    </Float>
-  ))}</group>;
+  return (
+    <group>
+      {technologies.map(({ name, Icon, color, position }, index) => (
+        <Float key={name} speed={0.7 + index * 0.08} rotationIntensity={0.14} floatIntensity={0.3}>
+          <Html position={position} center transform distanceFactor={9} style={{ pointerEvents: 'auto' }}>
+            <div
+              className="tech-float-card"
+              aria-label={name}
+              style={{ '--tech-glow': color } as React.CSSProperties}
+            >
+              <Icon size={24} color={color} aria-hidden="true" />
+              <span>{name}</span>
+            </div>
+          </Html>
+        </Float>
+      ))}
+    </group>
+  );
 }

@@ -38,7 +38,7 @@ export function About() {
               {resumePreviewUrl && resumeDownloadUrl && (
                 <>
                   <GlowButton href={resumePreviewUrl} target="_blank" rel="noopener noreferrer"><Eye size={16} />View Resume</GlowButton>
-                  <a href={resumeDownloadUrl} className="inline-flex items-center gap-2 rounded-full border border-blue-400/50 bg-slate-900/70 px-4 py-2 text-sm font-medium text-blue-200 transition hover:border-blue-300 hover:text-white"><Download size={16} />Download PDF</a>
+                  <GlowButton variant="outline" href={resumeDownloadUrl} download="Yakshit_Resume.pdf"><Download size={16} />Download PDF</GlowButton>
                 </>
               )}
               <GlowButton variant="outline" href="#projects" onClick={(event) => { event.preventDefault(); scrollToSection('projects'); }}><GlowRing size={24} />View Projects <ArrowDownRight size={16} /></GlowButton>

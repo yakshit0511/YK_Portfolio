@@ -194,8 +194,8 @@ export function HeroSequence() {
     <div className="hero-sequence-wrap">
       <motion.div
         className="hero-sequence-frame"
-        whileHover={!isMobile && !reducedMotion ? { rotateX: -1.5, rotateY: 2 } : undefined}
-        transition={{ type: 'spring', stiffness: 140, damping: 18 }}
+        whileHover={!isMobile && !reducedMotion ? { rotateX: -2.5, rotateY: 3.5, scale: 1.015 } : undefined}
+        transition={{ type: 'spring', stiffness: 180, damping: 20 }}
       >
         <div className="sequence-frame-glow" aria-hidden="true" />
         <AnimatePresence initial={false} mode="sync">

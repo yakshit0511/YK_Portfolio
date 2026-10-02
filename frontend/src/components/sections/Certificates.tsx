@@ -1,6 +1,7 @@
 import { Award, ExternalLink } from 'lucide-react';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { SectionHeading } from '../ui/SectionHeading';
+import { TiltCard } from '../ui/TiltCard';
 
 export function Certificates() {
   const { data } = usePortfolio();
@@ -12,7 +13,7 @@ export function Certificates() {
     <div className="container">
       <SectionHeading label="04 / CREDENTIALS" title="Certificates & recognition" />
       <div className="certificates-grid">
-        {certificates.map((certificate) => <article className="certificate-item" key={`${certificate.title}-${certificate.credentialId || certificate.issuer || ''}`}>
+        {certificates.map((certificate) => <TiltCard className="certificate-item" key={`${certificate.title}-${certificate.credentialId || certificate.issuer || ''}`}>
           {certificate.image?.url
             ? <img className="certificate-image" src={certificate.image.url} alt={`${certificate.title} credential`} loading="lazy" />
             : <div className="certificate-mark" aria-hidden="true"><Award size={24} /></div>}
@@ -23,7 +24,7 @@ export function Certificates() {
             {certificate.description && <p className="certificate-description">{certificate.description}</p>}
             {certificate.credentialUrl && <a href={certificate.credentialUrl} target="_blank" rel="noopener noreferrer">View credential <ExternalLink size={14} /></a>}
           </div>
-        </article>)}
+        </TiltCard>)}
       </div>
     </div>
   </section>;
