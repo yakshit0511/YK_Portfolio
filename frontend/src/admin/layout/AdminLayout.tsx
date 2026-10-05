@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useIdleLogout } from '../hooks/useIdleLogout';
@@ -29,11 +29,6 @@ export function AdminLayout({ title, children, unreadCount = 0 }: AdminLayoutPro
     setSidebarOpen(false);
   }, [location.pathname]);
 
-  const topbarRight = useMemo(() => {
-    if (!user?.email) return null;
-    return <span className="hidden rounded-full border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-200 md:inline-flex">{user.email}</span>;
-  }, [user?.email]);
-
   return (
     <>
       <Helmet>
@@ -43,7 +38,7 @@ export function AdminLayout({ title, children, unreadCount = 0 }: AdminLayoutPro
       <div className="min-h-screen bg-slate-950 text-slate-100">
         <Sidebar open={sidebarOpen} unreadCount={unreadCount} onClose={() => setSidebarOpen(false)} />
         <div className="md:pl-72">
-          <Topbar title={title} email={user?.email} onLogout={() => void logout()} onMenuToggle={() => setSidebarOpen((value) => !value)} rightSlot={topbarRight} />
+          <Topbar title={title} email={user?.email} onLogout={() => void logout()} onMenuToggle={() => setSidebarOpen((value) => !value)} />
           <main className="p-4 md:p-6">
             <div className="mx-auto max-w-7xl">
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>

@@ -329,7 +329,7 @@ export const createProject = async (req, res) => {
     }
 
     if (payload.features && Array.isArray(payload.features)) {
-      payload.features = payload.features.slice(0, 10).map((value) => String(value).slice(0, 120));
+      payload.features = payload.features.slice(0, 10).map((value) => String(value).slice(0, 250));
     }
 
     const slug = await makeUniqueSlug(payload.title);
@@ -377,7 +377,7 @@ export const updateProject = async (req, res) => {
     }
 
     if (payload.features && Array.isArray(payload.features)) {
-      payload.features = payload.features.slice(0, 10).map((value) => String(value).slice(0, 120));
+      payload.features = payload.features.slice(0, 10).map((value) => String(value).slice(0, 250));
     }
 
     Object.assign(project, payload);

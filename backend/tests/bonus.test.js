@@ -42,11 +42,11 @@ describe('bonus portfolio APIs', () => {
     const firstImport = await importInitialProjects();
     const secondImport = await importInitialProjects();
 
-    expect(firstImport.created).toHaveLength(3);
+    expect(firstImport.created).toHaveLength(5);
     expect(firstImport.skipped).toEqual(['Aaditya Builders - Real Estate Business Platform']);
     expect(secondImport.created).toHaveLength(0);
-    expect(secondImport.skipped).toHaveLength(4);
-    expect(await Project.countDocuments()).toBe(4);
+    expect(secondImport.skipped).toHaveLength(6);
+    expect(await Project.countDocuments()).toBe(6);
     expect((await Project.findOne({ slug: 'aaditya-builders' })).description).toBe('Admin-edited description');
     expect((await Project.findOne({ slug: 'campus-connect' })).liveUrl).toBe('https://campus-connect-ten-blond.vercel.app/');
   });

@@ -107,8 +107,10 @@ export function ProjectForm({ mode, projectId, onSaved, onCreated, onCancel }: P
       }
       showToast('Saved. Your live site updates within a minute.', 'success');
       onSaved?.();
-    } catch (error) {
-      showToast((error as Error).message || 'Unable to save project.', 'error');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string; errors?: Array<{ message?: string }> } }; message?: string };
+      const detailedMsg = err.response?.data?.errors?.[0]?.message || err.response?.data?.message || err.message || 'Unable to save project.';
+      showToast(detailedMsg, 'error');
     } finally {
       setLoading(false);
     }

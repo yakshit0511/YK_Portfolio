@@ -12,7 +12,7 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const frontendImages = path.resolve(scriptDir, '../../frontend/public/images/projects');
 const cloudinaryFolder = 'yakshit-portfolio/projects';
 const covers = [
-  { slug: 'aaditya-builders', fileName: 'aaditya-builders.png' },
+  { slug: 'thakkar-traders', fileName: 'thakkar-traders.png' },
   { slug: 'campus-connect', fileName: 'campus-connect.png' },
   { slug: 'momai-gems', fileName: 'momai-gems.png' },
   { slug: 'kolmeks', fileName: 'kolmeks.png' },
@@ -40,9 +40,16 @@ export async function attachProjectCovers() {
   const results = { attached: [], skipped: [] };
 
   for (const cover of covers) {
-    const project = await Project.findOne({ slug: cover.slug });
+    const project = await Project.findOne({
+      $or: [
+        { slug: cover.slug },
+        { slug: new RegExp(`^${cover.slug}`) },
+        { title: new RegExp(cover.slug.replace(/-/g, ' '), 'i') },
+      ],
+    });
     if (!project) {
-      throw new Error(`Project not found for cover: ${cover.slug}`);
+      console.warn(`Project not found for cover: ${cover.slug}, skipping.`);
+      continue;
     }
 
     const marker = `${cloudinaryFolder}/${cover.slug}-cover`;

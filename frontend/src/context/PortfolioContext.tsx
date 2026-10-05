@@ -39,6 +39,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
           ...result,
           skills: result.skills?.length ? result.skills : fallbackData.skills,
           education: result.education?.length ? result.education : fallbackData.education,
+          projects: result.projects?.length ? result.projects : fallbackData.projects,
           certificates: result.certificates ?? [],
           profile: safeProfile,
         });

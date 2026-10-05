@@ -41,7 +41,7 @@ const projectSchema = new mongoose.Schema(
     },
     features: [{
       type: String,
-      maxlength: 120,
+      maxlength: 250,
     }],
     challenges: {
       type: String,
